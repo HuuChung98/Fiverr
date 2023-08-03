@@ -16,7 +16,7 @@ export class JobTypeService {
     return `Phan trang loai cong viec`;
   }
 
-  jobTypeDetail() {
+  jobTypeDetail(id: number) {
     return `Tra ve chi tiet loai cong viec`;
   }
 

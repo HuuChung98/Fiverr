@@ -2,7 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { HireJobService } from './hire-job.service';
 import { CreateHireJobDto } from './dto/create-hire-job.dto';
 import { UpdateHireJobDto } from './dto/update-hire-job.dto';
+import { ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 
+
+@ApiTags("ThueCongViec")
 @Controller('api/thue-cong-viec')
 export class HireJobController {
   constructor(private readonly hireJobService: HireJobService) {}

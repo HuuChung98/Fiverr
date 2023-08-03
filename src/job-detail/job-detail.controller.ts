@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { JobDetailService } from './job-detail.service';
 import { CreateJobDetailDto } from './dto/create-job-detail.dto';
 import { UpdateJobDetailDto } from './dto/update-job-detail.dto';
+import { ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger'; 
 
-@Controller('job-detail')
+@ApiTags("ChiTietLoaiCongViec")
+@Controller('api/chi-tiet-loai-cong-viec')
 export class JobDetailController {
   constructor(private readonly jobDetailService: JobDetailService) {}
 

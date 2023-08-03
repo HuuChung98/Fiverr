@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { JobTypeService } from './job-type.service';
 import { CreateJobTypeDto } from './dto/create-job-type.dto';
 import { UpdateJobTypeDto } from './dto/update-job-type.dto';
+import { ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 
+@ApiTags("LoaiCongViec") // gom nhóm API trong swagger
 @Controller('api/loai-cong-viec')
 export class JobTypeController {
   constructor(private readonly jobTypeService: JobTypeService) {}

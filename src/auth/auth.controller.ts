@@ -2,17 +2,19 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger'; 
 
-@Controller('auth')
+@ApiTags("Auth")
+@Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
+  @Post("/login")
   login(@Body() body) {
     return this.authService.login(body);
   }
 
-  @Post()
+  @Post("/sign-up")
   register(@Body() body) {
     return this.authService.register(body);
   }
