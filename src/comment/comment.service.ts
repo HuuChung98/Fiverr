@@ -4,15 +4,15 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentService {
-  create(createCommentDto: CreateCommentDto) {
+  postComment(body) {
     return 'This action adds a new comment';
   }
 
-  findAll() {
+  getComment() {
     return `This action returns all comment`;
   }
 
-  findOne(id: number) {
+  editComment(id: number) {
     return `This action returns a #${id} comment`;
   }
 
@@ -20,7 +20,11 @@ export class CommentService {
     return `This action updates a #${id} comment`;
   }
 
-  remove(id: number) {
+  removeCmt(id: number) {
     return `This action removes a #${id} comment`;
+  }
+
+  getCommentById(id: number, updateCommentDto: UpdateCommentDto) {
+    return `This action updates a #${id} comment`;
   }
 }
