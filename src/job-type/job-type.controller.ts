@@ -3,32 +3,37 @@ import { JobTypeService } from './job-type.service';
 import { CreateJobTypeDto } from './dto/create-job-type.dto';
 import { UpdateJobTypeDto } from './dto/update-job-type.dto';
 
-@Controller('job-type')
+@Controller('api/loai-cong-viec')
 export class JobTypeController {
   constructor(private readonly jobTypeService: JobTypeService) {}
 
   @Post()
-  create(@Body() createJobTypeDto: CreateJobTypeDto) {
-    return this.jobTypeService.create(createJobTypeDto);
+  createJobType(@Body() createJobTypeDto: CreateJobTypeDto) {
+    return this.jobTypeService.createJobType(createJobTypeDto);
   }
 
   @Get()
-  findAll() {
-    return this.jobTypeService.findAll();
+  getJobType() {
+    return this.jobTypeService.getJobType();
+  }
+
+  @Get()
+  getJobType_Page() {
+    return this.jobTypeService.getJobType_Page();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.jobTypeService.findOne(+id);
+  jobTypeDetail(@Param('id') id: string) {
+    return this.jobTypeService.jobTypeDetail(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateJobTypeDto: UpdateJobTypeDto) {
-    return this.jobTypeService.update(+id, updateJobTypeDto);
+  updateTypeJob(@Param('id') id: string) {
+    return this.jobTypeService.updateTypeJob(+id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.jobTypeService.remove(+id);
+  removeJobType(@Param('id') id: string) {
+    return this.jobTypeService.removeJobType(+id);
   }
 }

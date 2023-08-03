@@ -4,23 +4,28 @@ import { UpdateJobTypeDto } from './dto/update-job-type.dto';
 
 @Injectable()
 export class JobTypeService {
-  create(createJobTypeDto: CreateJobTypeDto) {
-    return 'This action adds a new jobType';
+  createJobType(createJobTypeDto: CreateJobTypeDto) {
+    return 'tra ve loai cong viec';
   }
 
-  findAll() {
-    return `This action returns all jobType`;
+  getJobType() {
+    return `Tra ve loai cong viec`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} jobType`;
+  getJobType_Page() {
+    return `Phan trang loai cong viec`;
   }
 
-  update(id: number, updateJobTypeDto: UpdateJobTypeDto) {
-    return `This action updates a #${id} jobType`;
+  jobTypeDetail() {
+    return `Tra ve chi tiet loai cong viec`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} jobType`;
+  updateTypeJob(id: number) {
+    return `Tra ve cap nhat loai cong viec`;
+  }
+
+
+  removeJobType(id: number) {
+    return `Xoa loai cong viec`;
   }
 }
