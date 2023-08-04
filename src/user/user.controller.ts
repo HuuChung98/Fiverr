@@ -1,48 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Headers, Req, HttpException } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+// import { CreateUserDto } from './dto/create-user.dto';
+// import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtService } from '@nestjs/jwt';
+
+import { NguoiDung } from '@prisma/client';
+import { AuthGuard } from '@nestjs/passport';
 
 class userType {
-  @ApiProperty({ description: "userId", type: Number})
+  @ApiProperty({ description: "userId", type: Number })
   nguoi_dung_id: number;
 
-  @ApiProperty({ description: "name", type: String})
+  @ApiProperty({ description: "name", type: String })
   ten_nguoi_dung: string;
 
-  @ApiProperty({ description: "email", type: String})
+  @ApiProperty({ description: "email", type: String })
   email: string;
 
-  @ApiProperty({ description: "pass_word", type: String})
+  @ApiProperty({ description: "pass_word", type: String })
   pass_word: string;
 
-  @ApiProperty({ description: "phone", type: String})
+  @ApiProperty({ description: "phone", type: String })
   phone: string;
 
-  @ApiProperty({ description: "birth_day", type: String})
+  @ApiProperty({ description: "birth_day", type: String })
   birth_day: string;
 
-  @ApiProperty({ description: "gender", type: String})
+  @ApiProperty({ description: "gender", type: String })
   gender: string;
 
-  @ApiProperty({ description: "role", type: String})
+  @ApiProperty({ description: "role", type: String })
   role: string;
 
-  @ApiProperty({ description: "skill", type: String})
+  @ApiProperty({ description: "skill", type: String })
   skill: string;
 
-  @ApiProperty({ description: "certification", type: String})
+  @ApiProperty({ description: "certification", type: String })
   certification: string;
 }
+
 
 @ApiTags("NguoiDung")
 @Controller('api/users')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService, private jwtService: JwtService) { }
 
+  // @ApiBearerAuth()
+  @ApiHeader({ name: "Token", description: "Bearer JWT token" })
+  @UseGuards(AuthGuard("jwt")) // jwt là key mặc định
   @Get()
-  getUser() {
+  getUser(@Headers("token") token) {
+    console.log("Authorization", token);
     return this.userService.getUser();
   }
 

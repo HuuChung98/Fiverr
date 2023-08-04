@@ -2,6 +2,7 @@ import { Body, HttpException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { JwtService } from '@nestjs/jwt';
 
 import { PrismaClient, NguoiDung } from '@prisma/client';
 
@@ -26,7 +27,7 @@ export class UserService {
       certification
     } = values;
     try {
-      let checkUser = await this.prisma.nguoiDung.findFirst({ where: { email} });
+      let checkUser = await this.prisma.nguoiDung.findFirst({ where: { email } });
 
       if (!checkUser) {
 
@@ -43,11 +44,11 @@ export class UserService {
           certification
         };
 
-        await this.prisma.nguoiDung.create({data: updateUser});
+        await this.prisma.nguoiDung.create({ data: updateUser });
 
-        return {...updateUser, message: "Tạo người dùng thành công"};
+        return { ...updateUser, message: "Tạo người dùng thành công" };
       } else {
-        throw new HttpException({ content: "email đã tồn tại", code: 404}, 404);
+        throw new HttpException({ content: "email đã tồn tại", code: 404 }, 404);
         // return "Tạo thất bại"
       }
 
@@ -56,13 +57,13 @@ export class UserService {
       throw new HttpException(error.response.content, error.status);
       // return "Lỗi BE"
     }
-
-
   }
 
   async getUser() {
+
     let data = await this.prisma.nguoiDung.findMany();
-    return data;
+    return data
+
   }
 
   removeUser(id: number) {
