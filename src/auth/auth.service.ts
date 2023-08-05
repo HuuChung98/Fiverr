@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
@@ -15,25 +15,16 @@ export class AuthService {
   async login(userLogin) {
     // return `This action returns all auth`;
     let { email, pass_word } = userLogin;
-    try {
-      let checkUser = await this.prisma.nguoiDung.findFirst({ where: { email } });
-
-      if (checkUser) {
-        if (pass_word == checkUser.pass_word) {
-          let accessToken = await this.jwtService.signAsync({ data: "data" }, { secret: "CHUNG", expiresIn: "30m" });
-
-          return { ...checkUser, accessToken };
-        } else {
-          // return "Toai khoan hoac mat khau khong dung"
-          throw new HttpException({ content: "Tài khoản hoặc mật khẩu không đúng" }, 404);
-        }
-      } else {
-        // return "Email chưa được đăng kí hoặc không đúng định dạng"
-        throw new HttpException({ content: "Email chưa được đăng kí hoặc không đúng định dạng", code: 404 }, 404);
-      }
-    } catch (error) {
-      throw new HttpException(error.response.content, error.status);
+    const user = await this.prisma.nguoiDung.findFirst({where: {email}});
+    if (user?.pass_word !== pass_word) {
+      throw new UnauthorizedException();
     }
+    const payload = { email: user.email};
+    console.log("debugger");
+    return {
+      access_token : await this.jwtService.signAsync(payload)
+    }
+
 
   }
   register(body) {

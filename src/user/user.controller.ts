@@ -1,14 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Headers, Req, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Headers, Req, HttpException, HttpStatus, Query, Put, UploadedFile } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 // import { CreateUserDto } from './dto/create-user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtService } from '@nestjs/jwt';
-
-import { NguoiDung } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
 
-class userType {
+class FileUploadDto {
+  @ApiProperty({ type: 'string', format: 'binary'})
+  file: any;
+}
+
+class User {
   @ApiProperty({ description: "userId", type: Number })
   nguoi_dung_id: number;
 
@@ -41,52 +44,77 @@ class userType {
 }
 
 
+@ApiBearerAuth()
+@ApiHeader({ name: "Token", description: "JWT token" })
+@UseGuards(AuthGuard("jwt")) // jwt là key mặc định
+
 @ApiTags("NguoiDung")
 @Controller('api/users')
 export class UserController {
   constructor(private readonly userService: UserService, private jwtService: JwtService) { }
 
-  // @ApiBearerAuth()
-  @ApiHeader({ name: "Token", description: "Bearer JWT token" })
-  @UseGuards(AuthGuard("jwt")) // jwt là key mặc định
+   // Lấy danh sách người dùng
   @Get()
-  getUser(@Headers("token") token) {
-    console.log("Authorization", token);
+  getUser(@Headers("authorization") access_token) {
+    console.log(access_token);
+    // Extract the Bearer token from the 'Authorization' header
+    if (!access_token) {
+      throw new HttpException('Authorization header not provided', HttpStatus.UNAUTHORIZED);
+    }
+
+    const [bearer, token] = access_token.split(' ');
+    if (bearer !== 'Bearer' || !token) {
+      throw new HttpException('Invalid Bearer token', HttpStatus.UNAUTHORIZED);
+    }
     return this.userService.getUser();
   }
 
-  @Post()
-  createUser(@Body() values: userType) {
-    return this.userService.createUser(values);
-  }
-
+  // Xóa người dùng
   @Delete(':id')
   removeUser(@Param('id') id: string) {
     return this.userService.removeUser(+id);
   }
 
-  @Get(':id')
-  userPage(@Param('id') id: string) {
-    return this.userService.userPage(+id);
+  // Phân trang tìm kiếm
+  @Get("phan-trang-tim-kiem")
+  userUserPage(@Query('pageIndex') pageIndex: number, @Query("pageSize") pageSize: number, @Query("keyword") keyword: string) {
+    const paginationOptions = {pageIndex, pageSize}
+    return this.userService.userUserPage(paginationOptions, keyword);
   }
 
+  // Lấy thông tin người dùng theo userId
   @Get(':id')
   userInfo(@Param('id') id: string) {
     return this.userService.userInfo(+id);
   }
 
-  @Patch(':id')
-  updateUser(@Param('id') id: string, @Body() body) {
-    return this.userService.updateUser(+id,);
-  }
-  @Get(':id')
-  searchUser(@Param('id') id: string) {
-    return this.userService.searchUser(+id);
+  // Tạo người dùng
+  @Post()
+  createUser(@Body() values: User) {
+    return this.userService.createUser(values);
   }
 
-  @Post(':id')
-  uploadAvatar(@Param('id') id: string) {
-    return this.userService.uploadAvatar(+id);
+  // Chỉnh sửa thông tin người dùng
+  @Put(':id')
+  updateUser(@Param('id') id: string, @Body() userUpdate) {
+    return this.userService.updateUser(+id, userUpdate);
+  }
+
+  // Tìm kiếm người dùng theo tên người dùng
+  @Get("search/:TenNguoiDung")
+  searchUserName(@Param('userName') userName: string) {
+    return this.userService.searchUserName(userName);
+  }
+
+  // Upload avatar 
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Hình đại diện',
+    type: FileUploadDto,
+  })
+  @Post('upload-avatar')
+  uploadAvatar(@UploadedFile() file: Express.Multer.File, @Param('id') id: string) {
+    return this.userService.uploadAvatar(file, +id);
   }
 
 }

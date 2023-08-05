@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     // kiểm tra token
-    constructor(config: ConfigService) {
+    constructor() {
         super({
             jwtFromRequest: // nhận req từ client
                 ExtractJwt.fromAuthHeaderAsBearerToken(),
