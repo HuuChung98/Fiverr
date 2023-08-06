@@ -69,6 +69,7 @@ model NguoiDung {
   role           String?        @db.VarChar(100)
   skill          String?        @db.VarChar(100)
   certification  String?        @db.VarChar(100)
+  hinh_dai_dien  String?        @db.VarChar(100)
   BinhLuan       BinhLuan[]
   CongViec       CongViec[]
   ThueCongViec   ThueCongViec[]

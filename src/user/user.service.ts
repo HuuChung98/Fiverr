@@ -1,6 +1,6 @@
 import { Body, HttpException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+// import { CreateUserDto } from './dto/create-user.dto';
+// import { UpdateUserDto } from './dto/update-user.dto';
 
 import { PrismaClient, NguoiDung } from '@prisma/client';
 
@@ -94,7 +94,7 @@ export class UserService {
     return user;
   }
 
-  async updateUser(id:number, userUpdate) {
+  async updateUser(id: number, userUpdate) {
     console.log(userUpdate);
     let {
       nguoi_dung_id,
@@ -125,9 +125,9 @@ export class UserService {
           skill,
           certification
         };
-         
-        await this.prisma.nguoiDung.update({data: updateUser, where: {nguoi_dung_id: id}});
-      
+
+        await this.prisma.nguoiDung.update({ data: updateUser, where: { nguoi_dung_id: id } });
+
         return { ...updateUser };
       } else {
         throw new HttpException({ content: "email đã tồn tại", code: 404 }, 404);
@@ -140,12 +140,39 @@ export class UserService {
       // return "Lỗi BE"
     }
   }
-  async searchUserName(userName) {
-    const data = await this.prisma.nguoiDung.findMany({where: {ten_nguoi_dung: userName}});
-    return data;
+  async searchUserName(TenNguoiDung: string) {
+    try {
+      const data = await this.prisma.nguoiDung.findFirst({ where: { ten_nguoi_dung: TenNguoiDung } });
+      if (data) {
+        return data;
+      } else {
+        throw new HttpException({ content: `Không người dùng tên ${TenNguoiDung}`, code: 404 }, 404);
+      }
+    } catch (error) {
+      throw new HttpException(error.response.content, error.status);
+    }
   }
 
-  uploadAvatar(file, id: number) {
-    return "Cap nhat anh nguoi dung";
+  async uploadAvatar(file: Express.Multer.File, id: number) {
+    let { destination, filename } = file;
+    const link = `http://localhost:8080/public/img/${filename}`
+    try {
+
+      let getUserById = await this.prisma.nguoiDung.findFirst({ where: { nguoi_dung_id: id } });
+
+      if (getUserById) {
+        getUserById.hinh_dai_dien = link;
+
+        await this.prisma.nguoiDung.update({
+          data: getUserById, where: {
+            nguoi_dung_id: Number(id)
+          }
+        })
+        return "Cập nhật ảnh đại diện thành công";
+      }
+      throw new HttpException({ content: "Cập nhật ảnh đại diện không thành công", code: 404 }, 404);
+    } catch (error) {
+      throw new HttpException(error.response.content, error.status);
+    }
   }
 }
