@@ -10,13 +10,12 @@ export class JobTypeService {
 
   async createJobType(body) {
     let {ten_loai_cong_viec} = body;
-    let jobType = await this.prisma.loaiCongViec.findMany({ where: { ten_loai_cong_viec}});
+    let jobType = await this.prisma.loaiCongViec.findFirst({ where: { ten_loai_cong_viec}});
     
-    if(jobType.length == 0) {
-      return "Loại công việc đã tồn tại"
+    if(jobType) {
+      return "Loại công việc đã tồn tại";
     }
     return await this.prisma.loaiCongViec.create({ data: body});
-     
   }
 
   async getJobType() {
@@ -29,28 +28,35 @@ export class JobTypeService {
     const { pageIndex, pageSize } = paginationOptions;
     const skip = (pageIndex - 1) * pageSize;
 
-    let jobType = await this.prisma.loaiCongViec.findMany({ where: { ten_loai_cong_viec: keyword}, take: Number(pageSize), skip: skip});
+    let jobType = await this.prisma.loaiCongViec.findMany({  include: {
+      ChiTietLoaiCongViec: true
+    }, where: { ten_loai_cong_viec: keyword,}, take: Number(pageSize), skip: skip});
 
     return jobType;
   }
 
   async jobTypeDetail(id: number) {
-    let jobTypeDetail = await this.prisma.loaiCongViec.findFirst({where: {
+    let jobTypeDetail = await this.prisma.loaiCongViec.findFirst({include: {
+      ChiTietLoaiCongViec: true
+    }, where: {
       loaiCongViec_id: id
     }}) 
     return jobTypeDetail;
   }
 
   async updateTypeJob(id: number, payload) {
+
     let checkLoaiCongViec  = await this.prisma.loaiCongViec.findFirst({where: {
       loaiCongViec_id: id
     }});
 
     if(checkLoaiCongViec) {
-      await this.prisma.loaiCongViec.update(payload)
+      await this.prisma.loaiCongViec.update({data: payload, where: {
+        loaiCongViec_id: id
+      }});
+      return "Cập nhật thành công";
     }
 
-    return checkLoaiCongViec;
   }
 
 
