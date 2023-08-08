@@ -10,7 +10,7 @@ export class SkillService {
 
   async getSkill() {
     let userList = await this.prisma.nguoiDung.findMany();
-    
+
     let skillList = new Array;
     userList.map((item) => skillList.push(item?.skill))
     return skillList.sort().join(", ").toString();

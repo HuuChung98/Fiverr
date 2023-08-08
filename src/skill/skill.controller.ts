@@ -8,11 +8,11 @@ import { AuthGuard } from '@nestjs/passport';
 @ApiTags("Skill")
 @Controller('api/skill')
 export class SkillController {
-  constructor(private readonly skillService: SkillService) {}
+  constructor(private readonly skillService: SkillService) { }
 
   @ApiBearerAuth()
-@ApiHeader({ name: "Token", description: "JWT token" })
-@UseGuards(AuthGuard("jwt")) // jwt là key mặc định
+  @ApiHeader({ name: "Token", description: "JWT token" })
+  @UseGuards(AuthGuard("jwt")) // jwt là key mặc định
   @Get()
   getSkill() {
     return this.skillService.getSkill();
