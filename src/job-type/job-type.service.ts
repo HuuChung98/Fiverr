@@ -59,7 +59,6 @@ export class JobTypeService {
 
   }
 
-
   async removeJobType(id: number) {
     let removeJobType = await this.prisma.loaiCongViec.findFirst({ where: {
       loaiCongViec_id: id

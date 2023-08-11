@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model ChiTietLoaiCongViec {
+  chiTiet_id      Int           @id @default(autoincrement())
+  ten_chi_tiet    String?       @db.VarChar(100)
+  hinh_anh        String?       @db.VarChar(100)
+  loaiCongViec_id Int?
+  LoaiCongViec    LoaiCongViec? @relation(fields: [loaiCongViec_id], references: [loaiCongViec_id], onDelete: Cascade, map: "ChiTietLoaiCongViec_ibfk_1")
+  CongViec        CongViec[]
+
+  @@index([loaiCongViec_id], map: "loaiCongViec_id")
+}
+
+model LoaiCongViec {
+  loaiCongViec_id     Int                   @id @default(autoincrement())
+  ten_loai_cong_viec  String?               @db.VarChar(100)
+  ChiTietLoaiCongViec ChiTietLoaiCongViec[]
+}
+
 model BinhLuan {
   binh_luan_id   Int        @id @default(autoincrement())
   congViec_id    Int?
@@ -14,22 +31,11 @@ model BinhLuan {
   ngay_binh_luan DateTime?  @db.DateTime(0)
   noi_dung       String?    @db.VarChar(100)
   sao_binh_luan  Int?
-  CongViec       CongViec?  @relation(fields: [congViec_id], references: [congViec_id], onDelete: NoAction, onUpdate: NoAction, map: "BinhLuan_ibfk_1")
-  NguoiDung      NguoiDung? @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "BinhLuan_ibfk_2")
+  CongViec       CongViec?  @relation(fields: [congViec_id], references: [congViec_id], onDelete: Cascade, map: "BinhLuan_ibfk_1")
+  NguoiDung      NguoiDung? @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: Cascade, map: "BinhLuan_ibfk_2")
 
   @@index([congViec_id], map: "congViec_id")
   @@index([nguoi_dung_id], map: "nguoi_dung_id")
-}
-
-model ChiTietLoaiCongViec {
-  chiTiet_id      Int           @id @default(autoincrement())
-  ten_chi_tiet    String?       @db.VarChar(100)
-  hinh_anh        String?       @db.VarChar(100)
-  loaiCongViec_id Int?
-  LoaiCongViec    LoaiCongViec? @relation(fields: [loaiCongViec_id], references: [loaiCongViec_id], onDelete: NoAction, onUpdate: NoAction, map: "ChiTietLoaiCongViec_ibfk_1")
-  CongViec        CongViec[]
-
-  @@index([loaiCongViec_id], map: "loaiCongViec_id")
 }
 
 model CongViec {
@@ -44,18 +50,12 @@ model CongViec {
   chiTiet_id          Int?
   nguoi_dung_id       Int?
   BinhLuan            BinhLuan[]
-  ChiTietLoaiCongViec ChiTietLoaiCongViec? @relation(fields: [chiTiet_id], references: [chiTiet_id], onDelete: NoAction, onUpdate: NoAction, map: "CongViec_ibfk_1")
-  NguoiDung           NguoiDung?           @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "CongViec_ibfk_2")
+  ChiTietLoaiCongViec ChiTietLoaiCongViec? @relation(fields: [chiTiet_id], references: [chiTiet_id], onDelete: Cascade, map: "CongViec_ibfk_1")
+  NguoiDung           NguoiDung?           @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: Cascade, map: "CongViec_ibfk_2")
   ThueCongViec        ThueCongViec[]
 
   @@index([chiTiet_id], map: "chiTiet_id")
   @@index([nguoi_dung_id], map: "nguoi_dung_id")
-}
-
-model LoaiCongViec {
-  loaiCongViec_id     Int                   @id @default(autoincrement())
-  ten_loai_cong_viec  String?               @db.VarChar(100)
-  ChiTietLoaiCongViec ChiTietLoaiCongViec[]
 }
 
 model NguoiDung {
@@ -77,12 +77,12 @@ model NguoiDung {
 
 model ThueCongViec {
   thue_cong_viec_id Int        @id @default(autoincrement())
-  congViec_id       Int?
-  nguoi_dung_id     Int?
   ngay_thue         DateTime?  @db.Date
   hoan_thanh        Boolean?
-  CongViec          CongViec?  @relation(fields: [congViec_id], references: [congViec_id], onDelete: NoAction, onUpdate: NoAction, map: "ThueCongViec_ibfk_1")
-  NguoiDung         NguoiDung? @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "ThueCongViec_ibfk_2")
+  congViec_id       Int?
+  nguoi_dung_id     Int?
+  CongViec          CongViec?  @relation(fields: [congViec_id], references: [congViec_id], onDelete: Cascade, map: "ThueCongViec_ibfk_1")
+  NguoiDung         NguoiDung? @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: Cascade, map: "ThueCongViec_ibfk_2")
 
   @@index([congViec_id], map: "congViec_id")
   @@index([nguoi_dung_id], map: "nguoi_dung_id")
