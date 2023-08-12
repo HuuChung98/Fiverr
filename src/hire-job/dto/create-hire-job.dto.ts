@@ -1,1 +1,6 @@
-export class CreateHireJobDto {}
+import { ApiProperty } from "@nestjs/swagger";
+
+export class CreateHireJobDto {
+
+
+}

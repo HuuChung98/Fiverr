@@ -175,5 +175,6 @@ export class UserService {
       throw new HttpException(error.response.content, error.status);
     }
   }
+   
 }
 // DATABASE_URL="mysql://root:1234@localhost:3306/db_fiverr?schema=public"

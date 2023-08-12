@@ -8,12 +8,13 @@ datasource db {
 }
 
 model ChiTietLoaiCongViec {
-  chiTiet_id      Int           @id @default(autoincrement())
-  ten_chi_tiet    String?       @db.VarChar(100)
-  hinh_anh        String?       @db.VarChar(100)
-  loaiCongViec_id Int?
-  LoaiCongViec    LoaiCongViec? @relation(fields: [loaiCongViec_id], references: [loaiCongViec_id], onDelete: Cascade, map: "ChiTietLoaiCongViec_ibfk_1")
-  CongViec        CongViec[]
+  chiTiet_id         Int           @id @default(autoincrement())
+  ten_chi_tiet       String?       @db.VarChar(100)
+  hinh_anh           String?       @db.VarChar(100)
+  loaiCongViec_id    Int?
+  nhom_chi_tiet_loai String?       @db.VarChar(100)
+  LoaiCongViec       LoaiCongViec? @relation(fields: [loaiCongViec_id], references: [loaiCongViec_id], onDelete: Cascade, map: "ChiTietLoaiCongViec_ibfk_1")
+  CongViec           CongViec[]
 
   @@index([loaiCongViec_id], map: "loaiCongViec_id")
 }
@@ -21,6 +22,7 @@ model ChiTietLoaiCongViec {
 model LoaiCongViec {
   loaiCongViec_id     Int                   @id @default(autoincrement())
   ten_loai_cong_viec  String?               @db.VarChar(100)
+  hinh_anh            String?               @db.VarChar(100)
   ChiTietLoaiCongViec ChiTietLoaiCongViec[]
 }
 
