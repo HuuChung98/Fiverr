@@ -3,7 +3,6 @@ import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { type } from 'os';
 
 const date: Date = new Date();
 // const localizedString: string = date.toLocaleString(); // Format based on user's locale

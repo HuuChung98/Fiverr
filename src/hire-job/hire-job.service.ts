@@ -1,38 +1,74 @@
 import { Injectable } from '@nestjs/common';
 import { CreateHireJobDto } from './dto/create-hire-job.dto';
 import { UpdateHireJobDto } from './dto/update-hire-job.dto';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class HireJobService {
-  createJob(createHireJobDto: CreateHireJobDto) {
-    return 'tao cong viec';
+
+  prisma = new PrismaClient();
+
+  async createJob(createHireJobDto: CreateHireJobDto) {
+     return await this.prisma.thueCongViec.create({ data: createHireJobDto } );
   }
 
-  hireJob() {
-    return `tra ve cong viec thue`;
+  async hireJob() {
+    return await this.prisma.thueCongViec.findMany();
   }
 
-  jobPage() {
-    return `Phan trang tim kiem`;
+  async jobHirePage(pageSplit, keyword) {
+    const {pageSize, pageIndex } = pageSplit;
+
+    const skip = ( pageIndex - 1 ) * pageSize;
+
+    const data = await this.prisma.thueCongViec.findMany({where: { ngay_thue: keyword }, take: pageSize, skip: skip});
+
+    return data
   }
 
-  jobDetail(id: number) {
-    return `Chi tiet loai cong viec`;
+  async jobDetail(id: number) {
+    const payload = await this.prisma.thueCongViec.findFirst({ include: 
+      {
+        CongViec: true
+      }, where: {
+        thue_cong_viec_id: id
+      }  
+    });
+
+    return payload;
   }
 
-  updateJob(id: number) {
-    return `Cap nhat cong viec`;
+  async updateJob(id: number, createHireJobDto: CreateHireJobDto) {
+    let updateJobHire = await this.prisma.thueCongViec.update({data: createHireJobDto, where: {
+      thue_cong_viec_id: id
+    }})
+
+    return "Đã cập nhật";
   }
 
-  removeJob(id: number) {
-    return `This action removes a #${id} hireJob`;
+  async removeJob(id: number) {
+    return await this.prisma.thueCongViec.delete({ where: {
+      thue_cong_viec_id: id
+    }})
   }
 
-  getHiredJob() {
-    return `lay danh sach da thue`;
+  async getHiredJob() {
+    return await this.prisma.thueCongViec.findMany();
   }
 
-  statusJob(job_id: number) {
-    return `lay danh sach da thue`;
+  async statusJob(MaThueCongViec: number) {
+    const jobHired = await this.prisma.thueCongViec.findFirst({ where: {
+      thue_cong_viec_id: MaThueCongViec
+    }});
+
+    if(jobHired) {
+      jobHired.hoan_thanh = true;
+
+      await this.prisma.thueCongViec.update({ data: jobHired, where: {
+        thue_cong_viec_id: MaThueCongViec
+      }})
+    }
+
+    return "Đã cập nhật";
   }
 }
