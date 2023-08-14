@@ -9,22 +9,28 @@ import { ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 export class HireJobController {
   constructor(private readonly hireJobService: HireJobService) { }
 
-  // Đăng kí Công Việc
-  @Post()
-  createJob(@Body() createHireJobDto: CreateHireJobDto) {
-    return this.hireJobService.createJob(createHireJobDto);
-  }
-
   // Trả về Công Việc đã thuê
   @Get()
   hireJob() {
     return this.hireJobService.hireJob();
   }
 
+  // Lấy danh sách đã thuê
+  @Get("lay-danh-sach-da-thue")
+  getHiredJob() {
+    return this.hireJobService.getHiredJob();
+  }
+
+  // Đăng kí Công Việc
+  @Post()
+  createJob(@Body() createHireJobDto: CreateHireJobDto) {
+    return this.hireJobService.createJob(createHireJobDto);
+  }
+
   // Phân trang Công Việc đã thuê
   @Get("phan-trang-tim-kiem")
-  jobHirePage(@Query("pageSize") pageSize: number, @Query("pageIndex") pageIndex: number, @Query("keyword") keyword : string) {
-    const pageSplit = { pageSize, pageIndex}
+  jobHirePage(@Query("pageSize") pageSize: number, @Query("pageIndex") pageIndex: number, @Query("keyword") keyword: string) {
+    const pageSplit = { pageSize, pageIndex }
     return this.hireJobService.jobHirePage(pageSplit, keyword);
   }
 
@@ -44,12 +50,6 @@ export class HireJobController {
   @Delete(':id')
   removeJob(@Param('id') id: string) {
     return this.hireJobService.removeJob(+id);
-  }
-
-  // Lấy danh sách đã thuê
-  @Get("lay-danh-sach-da-thue")
-  getHiredJob() {
-    return this.hireJobService.getHiredJob();
   }
 
   // Cập nhật hoàn thành công việc theo Mã Công Việc

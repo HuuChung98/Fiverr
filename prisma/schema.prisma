@@ -79,7 +79,7 @@ model NguoiDung {
 
 model ThueCongViec {
   thue_cong_viec_id Int        @id @default(autoincrement())
-  ngay_thue         DateTime?  @db.Date
+  ngay_thue         DateTime?  @db.DateTime(0)
   hoan_thanh        Boolean?
   congViec_id       Int?
   nguoi_dung_id     Int?

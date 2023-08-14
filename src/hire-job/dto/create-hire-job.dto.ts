@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-// const date: Date = new Date();
-// const isoString: string = date.toISOString();
+const date: Date = new Date();
+const isoString: string = date.toISOString();
 
 export class CreateHireJobDto {
     @ApiProperty({ description: "id", type: Number})
@@ -13,7 +13,7 @@ export class CreateHireJobDto {
     @ApiProperty({ description: "maNguoiThue", type: Number})
     nguoi_dung_id: number
 
-    @ApiProperty({ description: "ngayThue", type: String})
+    @ApiProperty({ description: "ngayThue", type: isoString})
     ngay_thue: string
 
     @ApiProperty({ description: "hoanThanh", type: Boolean})
