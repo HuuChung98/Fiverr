@@ -2,6 +2,7 @@ import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
+import { CreateAuthDto } from './dto/create-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -27,8 +28,17 @@ export class AuthService {
 
 
   }
-  register(body) {
-    return `This action returns a auth`;
+  async register(createAuthDto: CreateAuthDto) {
+    let checkUser = await this.prisma.nguoiDung.findFirst({ where: {
+      email: createAuthDto.email
+    }});
+    
+    if(!checkUser) {
+      await this.prisma.nguoiDung.create({data: createAuthDto});
+      return "Đã tạo tài khoản";
+    } else {
+      return "Email đã tồn tại";
+    }
   }
 
 }
