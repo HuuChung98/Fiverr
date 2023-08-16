@@ -45,9 +45,9 @@ model CongViec {
   ten_cong_viec       String?              @db.VarChar(100)
   danh_gia            Int?
   gia_tien            Int?
-  hinh_anh            String?              @db.VarChar(100)
-  mo_ta               String?              @db.VarChar(100)
-  mo_ta_ngan          String?              @db.VarChar(100)
+  hinh_anh            String?              @db.Text
+  mo_ta               String?              @db.Text
+  mo_ta_ngan          String?              @db.Text
   sao_cong_viec       Int?
   chiTiet_id          Int?
   nguoi_dung_id       Int?

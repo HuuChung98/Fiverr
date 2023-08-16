@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
 import { JobService } from './job.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
-import { ApiBody, ApiConsumes, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { AuthGuard } from '@nestjs/passport';
 
 class FileUploadDto {
   @ApiProperty({ type: "string", format: 'binary' })
@@ -44,16 +45,14 @@ class Job {
 
 }
 
+@ApiBearerAuth()
+@ApiHeader({ name: "Token", description: "JWT token"})
+@UseGuards(AuthGuard("jwt"))
+
 @ApiTags("CongViec")
 @Controller('api/cong-viec')
 export class JobController {
   constructor(private readonly jobService: JobService) { }
-
-  // Tạo Công Việc
-  @Post()
-  createJob(@Body() payload: Job) {
-    return this.jobService.createJob(payload);
-  }
 
   // Lấy về danh sách Công Việc
   @Get()
@@ -61,17 +60,22 @@ export class JobController {
     return this.jobService.getJob();
   }
 
+  // Lấy menu loai công viêc 
+  @Get("lay-menu-loai-cong-viec")
+  getMenuJobType() {
+    return this.jobService.getMenuJobType();
+  }
+  // Tạo Công Việc
+  @Post()
+  createJob(@Body() payload: Job) {
+    return this.jobService.createJob(payload);
+  }
+
   // Phân trang Công Việc
   @Get("phan-trang-tim-kiem")
   jobPage(@Query('pageIndex') pageIndex: number, @Query("pageSize") pageSize: number, @Query("keyword") keyword: string) {
     const paginationOptions = { pageIndex, pageSize }
     return this.jobService.jobPage(paginationOptions, keyword);
-  }
-
-  // Lấy menu loai công viêc 
-  @Get("lay-menu-loai-cong-viec")
-  getMenuJobType() {
-    return this.jobService.getMenuJobType();
   }
 
   // lấy thông tin công việc theo id công việc
@@ -106,17 +110,17 @@ export class JobController {
       })
     }))
   @Post("upload-hinh-cong-viec/:MaCongViec")
-  uploadImageJob(@UploadedFile() file: Express.Multer.File, @Param() MaCongViec: number) {
+  uploadImageJob(@UploadedFile() file: Express.Multer.File, @Param("MaCongViec") MaCongViec: number) {
     return this.jobService.uploadImageJob(file, +MaCongViec)
   }
 
-  // Lấy chi tiết loại công việc theo Mã loai công viêc
+  // Lấy Chi tiết loại công việc theo Mã loai công viêc
   @Get('lay-chi-tiet-loai-cong-viec/:MaLoaiCongViec')
   getDetailJobType(@Param("MaLoaiCongViec") MaLoaiCongViec: number) {
     return this.jobService.getDetailJobType(+MaLoaiCongViec)
   }
 
-  // Lấy công việc chi tiết theo chi tiết loại
+  // Lấy Công việc theo chi tiết loại
   @Get('lay-cong-viec-theo-chi-tiet-loai/:MaChiTietLoai')
   getJobByJobTypeId(@Param("MaChiTietLoai") MaChiTietLoai: number) {
     return this.jobService.getJobByJobTypeId(+MaChiTietLoai)
@@ -125,9 +129,9 @@ export class JobController {
   // Lấy công việc chi tiết theo Mã Công Việc
   @Get('lay-cong-viec-chi-tiet/:MaCongViec')
   gẹtJobDetailById(@Param("MaCongViec") MaCongViec: number) {
-    return this.jobService.gẹtJobDetailById(+MaCongViec) 
+    return this.jobService.gẹtJobDetailById(+MaCongViec)
   }
-  
+
   // Lấy danh sách công việc theo tên (Tên Công Việc)
   @Get('lay-danh-sach-cong-viec-theo-ten/:TenCongViec')
   getListJobByName(@Param("TenCongViec") TenCongViec: string) {
