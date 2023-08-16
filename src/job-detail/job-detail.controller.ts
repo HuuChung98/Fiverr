@@ -1,23 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
 import { JobDetailService } from './job-detail.service';
 import { CreateJobDetailDto } from './dto/create-job-detail.dto';
 import { UpdateJobDetailDto } from './dto/update-job-detail.dto';
-import { ApiBody, ApiConsumes, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { AuthGuard } from '@nestjs/passport';
 
 class FileUploadDto {
   @ApiProperty({ type: 'string', format: 'binary' })
   file: any;
 }
 
-class JobType {
+class JobTypeDetail {
   @ApiProperty({ description: "id", type: Number })
   chiTiet_id: number
 
-  @ApiProperty({ description: "tenChiTiet", type: Number })
+  @ApiProperty({ description: "tenChiTiet", type: String })
   ten_chi_tiet: string
 }
+@ApiBearerAuth()
+@ApiHeader({ name: "Token", description: "JWT token"})
+@UseGuards(AuthGuard("jwt"))
 
 @ApiTags("ChiTietLoaiCongViec")
 @Controller('api/chi-tiet-loai-cong-viec')
@@ -26,7 +30,7 @@ export class JobDetailController {
 
   // Tạo Loại Công Viêc
   @Post()
-  createJobType(@Body() payload: JobType) {
+  createJobType(@Body() payload: JobTypeDetail) {
     return this.jobDetailService.createJobType(payload);
   }
 
@@ -36,12 +40,6 @@ export class JobDetailController {
     return this.jobDetailService.getDetailJobType();
   }
 
-  // Lấy chi tiết Loại Công Việc theo Id
-  @Get(':id')
-  getJobInfo(@Param('id') id: string) {
-    return this.jobDetailService.getJobInfo(+id);
-  }
-
   // Phân trang tìm kiếm Loại Công Việc 
   @Get("phan-trang-tim-kiem")
   getTypeJobPage(@Query("pageIndex") pageIndex: number, @Query("pageSize") pageSize: number, @Query("keyword") keyword: string) {
@@ -49,9 +47,15 @@ export class JobDetailController {
     return this.jobDetailService.getTypeJobPage(paginationOptions, keyword);
   }
 
+  // Lấy chi tiết Loại Công Việc theo Id
+  @Get(':id')
+  getJobInfo(@Param('id') id: string) {
+    return this.jobDetailService.getJobInfo(+id);
+  }
+
   // Chỉnh sử loại công việc đã tạo theo id chi tiết loại
   @Put(':id')
-  updateJobType(@Param('id') id: number, @Body() payload: JobType) {
+  updateJobType(@Param('id') id: number, @Body() payload: JobTypeDetail) {
     return this.jobDetailService.updateJobType(+id, payload);
   }
 
@@ -86,7 +90,6 @@ export class JobDetailController {
 
     return this.jobDetailService.uploadImageGroupTypeJob(file, +MaNhomLoaiCongViec);
   }
-
 
   // sua nhóm chi tiết loại
   @Put("sua-nhom-chi-tiet-loai/:id")

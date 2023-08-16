@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateJobDetailDto } from './dto/create-job-detail.dto';
 import { UpdateJobDetailDto } from './dto/update-job-detail.dto';
 import { PrismaClient } from '@prisma/client';
@@ -9,18 +9,25 @@ export class JobDetailService {
   prisma = new PrismaClient();
 
   async createJobType(payload) {
-    const jobType = await this.prisma.chiTietLoaiCongViec.create(payload);
-    return jobType;
+    // await this.prisma.chiTietLoaiCongViec.create({ data: payload});
+    // return "Công việc đã được tạo";
+    try {
+      await this.prisma.chiTietLoaiCongViec.create({ data: payload });
+      return "Công việc đã được tạo";
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: "Tạo công việc không thành công, vui lòng kiểm tra lại quá trình tạo công việc",
+      }, HttpStatus.BAD_REQUEST, {
+        cause: error
+      })
+    }
+
   }
 
   async getDetailJobType() {
     const detailJobType = await this.prisma.chiTietLoaiCongViec.findMany();
     return detailJobType;
-  }
-
-  async getJobInfo(id: number) {
-    let data = await this.prisma.chiTietLoaiCongViec.findFirst({ where: { chiTiet_id: id } });
-    return data;
   }
 
   async getTypeJobPage(paginationOptions, keyword) {
@@ -31,14 +38,29 @@ export class JobDetailService {
     return data;
   }
 
-  async updateJobType(id: number, payload) {
-    const update = await this.prisma.chiTietLoaiCongViec.update({
-      data: payload, where: {
-        chiTiet_id: id
-      }
-    });
+  async getJobInfo(id: number) {
+    let data = await this.prisma.chiTietLoaiCongViec.findFirst({ where: { chiTiet_id: id } });
+    return data;
+  }
 
-    return "Đã cập nhật công việc thành công";
+  async updateJobType(id: number, payload) {
+    try {
+      const update = await this.prisma.chiTietLoaiCongViec.update({
+        data: payload, where: {
+          chiTiet_id: id
+        }
+      });
+
+      return "Đã cập nhật công việc thành công";
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: "Cập nhật công việc không thành công",
+      }, HttpStatus.BAD_REQUEST, {
+        cause: error
+      })
+    }
+
   }
 
   async removeJobType(id: number) {
@@ -47,15 +69,25 @@ export class JobDetailService {
         chiTiet_id: id
       }
     });
-    return "Đã xóa Công việc này";
+    return "Đã xóa công việc này";
   }
 
   async addJobDetail(createJobDetailDto: CreateJobDetailDto) {
-    let data = await this.prisma.chiTietLoaiCongViec.create({ data: createJobDetailDto });
-    return data
+    try {
+      await this.prisma.chiTietLoaiCongViec.create({ data: createJobDetailDto });
+      return "Đã thêm vào nhóm chi tiết loại công việc";
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: "Thêm nhóm chi tiết loại Công việc không thành công",
+      }, HttpStatus.BAD_REQUEST, {
+        cause: error
+      })
+    }
+
   }
 
-  async uploadImageGroupTypeJob( file: Express.Multer.File, MaNhomLoaiCongViec: number) {
+  async uploadImageGroupTypeJob(file: Express.Multer.File, MaNhomLoaiCongViec: number) {
     let { destination, filename } = file;
     const link = `http://localhost:8080/public/img/${filename}`
     try {
@@ -63,11 +95,14 @@ export class JobDetailService {
       let getImageById = await this.prisma.loaiCongViec.findFirst({ where: { loaiCongViec_id: MaNhomLoaiCongViec } });
 
       if (getImageById) {
+
         getImageById.hinh_anh = link;
 
-        await this.prisma.loaiCongViec.update({data: getImageById, where: {
-          loaiCongViec_id: Number(MaNhomLoaiCongViec)
-        }})
+        await this.prisma.loaiCongViec.update({
+          data: getImageById, where: {
+            loaiCongViec_id: Number(MaNhomLoaiCongViec)
+          }
+        })
         return "Cập nhật hình ảnh thành công";
       }
       throw new HttpException({ content: "Cập nhật hình ảnh không thành công", code: 404 }, 404);
@@ -77,17 +112,20 @@ export class JobDetailService {
   }
 
   async updateGroupJobDetail(id: number, createJobDetailDto: CreateJobDetailDto) {
-    let update = await this.prisma.chiTietLoaiCongViec.findFirst({
-      where: {
-        chiTiet_id: id
-      }
-    })
-
-    if (update) {
+    try {
       await this.prisma.chiTietLoaiCongViec.update({
-        data: update, where: {
+        data: createJobDetailDto, where: {
           chiTiet_id: id
         }
+      })
+      return "Cập nhật nhóm chi tiết loại thành công"
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: "Chỉnh sửa nhóm chi tiết loại không thành công",
+      }, HttpStatus.BAD_REQUEST, {
+        cause: error
       })
     }
   }
