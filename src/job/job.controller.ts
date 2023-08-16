@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
 import { JobService } from './job.service';
-import { CreateJobDto } from './dto/create-job.dto';
-import { UpdateJobDto } from './dto/update-job.dto';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -46,7 +44,7 @@ class Job {
 }
 
 @ApiBearerAuth()
-@ApiHeader({ name: "Token", description: "JWT token"})
+@ApiHeader({ name: "Token", description: "JWT token" })
 @UseGuards(AuthGuard("jwt"))
 
 @ApiTags("CongViec")
@@ -65,6 +63,7 @@ export class JobController {
   getMenuJobType() {
     return this.jobService.getMenuJobType();
   }
+
   // Tạo Công Việc
   @Post()
   createJob(@Body() payload: Job) {

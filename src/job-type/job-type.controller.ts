@@ -1,33 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseGuards } from '@nestjs/common';
 import { JobTypeService } from './job-type.service';
-import { CreateJobTypeDto } from './dto/create-job-type.dto';
-import { UpdateJobTypeDto } from './dto/update-job-type.dto';
-import { ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
-class JobType  {
-  @ApiProperty({ description: "loaiCongViec_id", type: Number})
-  loaiCongViec_id : number;
+class JobType {
+  @ApiProperty({ description: "loaiCongViec_id", type: Number })
+  loaiCongViec_id: number;
 
-  @ApiProperty( { description: "tenLoaiCongViec", type: String})
+  @ApiProperty({ description: "tenLoaiCongViec", type: String })
   ten_loai_cong_viec: string;
 }
 
+@ApiBearerAuth()
+@ApiHeader({ name: "Token", description: "JWT Token"})
+@UseGuards(AuthGuard("jwt"))
 
-@ApiTags("LoaiCongViec") // gom nhóm API trong swagger
+// gom nhóm API trong swagger
+@ApiTags("LoaiCongViec")
 @Controller('api/loai-cong-viec')
 export class JobTypeController {
-  constructor(private readonly jobTypeService: JobTypeService) {}
-
-  // Tạo loại công viêc
-  @Post()
-  createJobType(@Body() body: JobType) {
-    return this.jobTypeService.createJobType(body);
-  }
+  constructor(private readonly jobTypeService: JobTypeService) { }
 
   // Lấy về tất cả loại công việc
   @Get()
   getJobType() {
     return this.jobTypeService.getJobType();
+  }
+
+  // Tạo loại công viêc
+  @Post()
+  createJobType(@Body() payload: JobType) {
+    return this.jobTypeService.createJobType(payload);
   }
 
   // Phân trang tìm kiếm loai công việc 
@@ -44,11 +47,11 @@ export class JobTypeController {
   }
 
   // Chỉnh sửa lại loại công việc
-  @Patch(':id')
+  @Put(':id')
   updateTypeJob(@Param('id') id: string, @Body() payload: JobType) {
     return this.jobTypeService.updateTypeJob(+id, payload);
   }
- 
+
   // Xóa loại công việc đã tạo
   @Delete(':id')
   removeJobType(@Param('id') id: string) {

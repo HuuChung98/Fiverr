@@ -1,8 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateJobDto } from './dto/create-job.dto';
-import { UpdateJobDto } from './dto/update-job.dto';
 import { PrismaClient } from '@prisma/client';
-import { asyncScheduler } from 'rxjs';
 
 @Injectable()
 export class JobService {
@@ -25,7 +22,6 @@ export class JobService {
         cause: error
       })
     }
-
   }
 
   async jobPage(paginationOptions, keyword) {
@@ -43,7 +39,6 @@ export class JobService {
     } else {
       return job;
     }
-
   }
 
   async getJobInfor(id: number) {
@@ -99,10 +94,10 @@ export class JobService {
     } else {
       return "Xóa Công việc không thành công"
     }
-
   }
 
   async uploadImageJob(file: Express.Multer.File, MaCongViec: number) {
+
     let { destination, filename } = file;
     const link = `http://localhost:8080/public/img/${filename}`
 
@@ -173,7 +168,7 @@ export class JobService {
         ten_cong_viec: TenCongViec
       }
     })
-    if(jobName.length != 0) {
+    if (jobName.length != 0) {
       return jobName;
     } else {
       return "Không có công việc"
