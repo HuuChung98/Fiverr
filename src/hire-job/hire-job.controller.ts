@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put } from '@nestjs/common';
 import { HireJobService } from './hire-job.service';
 import { CreateHireJobDto } from './dto/create-hire-job.dto';
-import { UpdateHireJobDto } from './dto/update-hire-job.dto';
-import { ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+
+@ApiBearerAuth()
+@ApiHeader({ name: "Token", description: "JWT token"})
 
 @ApiTags("ThueCongViec")
 @Controller('api/thue-cong-viec')
@@ -14,13 +16,6 @@ export class HireJobController {
   hireJob() {
     return this.hireJobService.hireJob();
   }
-
-  // Lấy danh sách đã thuê
-  @Get("lay-danh-sach-da-thue")
-  getHiredJob() {
-    return this.hireJobService.getHiredJob();
-  }
-
   // Đăng kí Công Việc
   @Post()
   createJob(@Body() createHireJobDto: CreateHireJobDto) {
@@ -34,6 +29,11 @@ export class HireJobController {
     return this.hireJobService.jobHirePage(pageSplit, keyword);
   }
 
+  // Lấy danh sách đã thuê
+  @Get("lay-danh-sach-da-thue")
+  getHiredJob() {
+    return this.hireJobService.getHiredJob();
+  }
   // Lấy thông tin Công Việc đã thuê
   @Get(':id')
   jobDetail(@Param('id') id: string) {

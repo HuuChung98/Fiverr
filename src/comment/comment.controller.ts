@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseGuards, Headers, Req, HttpException } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { ApiBearerAuth, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
-
+import { AuthGuard } from '@nestjs/passport';
+import { JwtService } from '@nestjs/jwt';
 const date: Date = new Date();
 // const localizedString: string = date.toLocaleString(); // Format based on user's locale
 const isoString: string = date.toISOString(); // ISO 8601 format
@@ -29,12 +30,15 @@ class Comment {
   sao_binh_luan: number;
 }
 
-@ApiBearerAuth()
-@ApiHeader({ name: "Token", description: "JWT token"})
+// @ApiBearerAuth()
+// @ApiHeader({ name: "token", description: "Nhập token"})
+// @UseGuards(AuthGuard("jwt"))
+
 @ApiTags("BinhLuan")
+@ApiBearerAuth() // Add this decorator
 @Controller('api/binh-luan')
 export class CommentController {
-  constructor(private readonly commentService: CommentService) { }
+  constructor(private readonly commentService: CommentService, private jwtService: JwtService) { }
 
   // Đăng bình luận
   @Post()
@@ -43,9 +47,12 @@ export class CommentController {
   }
 
   // Lấy bình luận của người dùng
+
+  @UseGuards(AuthGuard("jwt"))
   @Get()
-  getComment() {
-    return this.commentService.getComment();
+  getComment(@Headers("token") token: string) {
+
+    return this.commentService.getComment(token);
   }
 
   // Chỉnh sửa (cập nhật) thông tin bình luận

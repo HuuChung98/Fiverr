@@ -56,22 +56,30 @@ export class UserController {
   constructor(private readonly userService: UserService, private jwtService: JwtService) { }
 
   // Lấy danh sách người dùng
-  @Get()
-  getUser(@Headers("authorization") access_token) {
-    console.log(access_token);
-    // Extract the Bearer token from the 'Authorization' header
-    if (!access_token) {
-      throw new HttpException('Authorization header not provided', HttpStatus.UNAUTHORIZED);
-    }
+  // @Get()
+  // getUser(@Headers("authorization") access_token) {
+  //   console.log(access_token);
+  //   // Extract the Bearer token from the 'Authorization' header
+  //   if (!access_token) {
+  //     throw new HttpException('Authorization header not provided', HttpStatus.UNAUTHORIZED);
+  //   }
 
-    const [bearer, token] = access_token.split(' ');
-    if (bearer !== 'Bearer' || !token) {
-      throw new HttpException('Invalid Bearer token', HttpStatus.UNAUTHORIZED);
-    }
-    return this.userService.getUser();
-  }
+  //   const [bearer, token] = access_token.split(' ');
+  //   if (bearer !== 'Bearer' || !token) {
+  //     throw new HttpException('Invalid Bearer token', HttpStatus.UNAUTHORIZED);
+  //   }
+  //   return this.userService.getUser();
+  // }
+
+   // Lấy danh sách người dùng
+   @Get()
+   getUser() {
+
+     return this.userService.getUser();
+   }
 
   // Xóa người dùng
+
   @Delete(':id')
   removeUser(@Param('id') id: string) {
     return this.userService.removeUser(+id);

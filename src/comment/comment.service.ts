@@ -1,12 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 import { PrismaClient } from '@prisma/client';
-import { abort } from 'process';
+import { JwtService } from '@nestjs/jwt';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 
 @Injectable()
 export class CommentService {
+
+  constructor(private jwtService: JwtService) { }
+
+
 
   prisma = new PrismaClient();
 
@@ -26,16 +29,28 @@ export class CommentService {
     }
   }
 
-  async getComment() {
-    let comment = await this.prisma.binhLuan.findMany({
-      include: {
-        NguoiDung: true
+  async getComment(token) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: "CHUNG"
+      });
+      let comment = await this.prisma.binhLuan.findMany({
+        include: {
+          NguoiDung: true
+        }
+      });
+      if (comment.length != 0) {
+        return comment;
+      } else {
+        return "Chưa có bình luận nào"
       }
-    });
-    if (comment.length != 0) {
-      return comment;
-    } else {
-      return "Chưa có bình luận nào"
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: "Lỗi xác thực"
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      })
     }
   }
 

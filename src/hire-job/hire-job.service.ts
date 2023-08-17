@@ -8,21 +8,35 @@ export class HireJobService {
 
   prisma = new PrismaClient();
 
-  async createJob(createHireJobDto: CreateHireJobDto) {
-    const hireJob = await this.prisma.thueCongViec.create({ data: createHireJobDto });
-    return "Đã tạo";
-  }
-
   async hireJob() {
     return await this.prisma.thueCongViec.findMany();
   }
+
+  async createJob(createHireJobDto: CreateHireJobDto) {
+
+    try {
+      await this.prisma.thueCongViec.create({ data: createHireJobDto });
+
+      return "Đã tạo";
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: "Có lỗi xảy ra",
+      }, HttpStatus.BAD_REQUEST, {
+        cause: error
+      })
+    }
+
+  }
+
+
 
   async jobHirePage(pageSplit, keyword) {
     const { pageSize, pageIndex } = pageSplit;
 
     const skip = (pageIndex - 1) * pageSize;
 
-    const data = await this.prisma.thueCongViec.findMany({ where: { ngay_thue: keyword }, take: pageSize, skip: skip });
+    const data = await this.prisma.congViec.findMany({ where: { ten_cong_viec: keyword }, take: Number(pageSize), skip: skip });
 
     return data
   }
@@ -36,7 +50,6 @@ export class HireJobService {
         thue_cong_viec_id: id
       }
     });
-    console.log(payload);
     try {
       if (payload == null) {
         return "Không có công việc được thuê!"
@@ -45,21 +58,31 @@ export class HireJobService {
       }
     } catch (error) {
       throw new HttpException({
-        status: HttpStatus.FORBIDDEN,
-        error: 'Something wrong happen',
-      }, HttpStatus.FORBIDDEN, {
+        status: HttpStatus.BAD_REQUEST,
+        error: 'Có lỗi xảy ra',
+      }, HttpStatus.BAD_REQUEST, {
         cause: error
       });
     }
   }
 
   async updateJob(id: number, createHireJobDto: CreateHireJobDto) {
-    let updateJobHire = await this.prisma.thueCongViec.update({
-      data: createHireJobDto, where: {
-        thue_cong_viec_id: id
-      }
-    })
-    return "Đã cập nhật";
+    try {
+      await this.prisma.thueCongViec.update({
+        data: createHireJobDto, where: {
+          thue_cong_viec_id: id
+        }
+      })
+      return "Đã cập nhật";
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: "Có lỗi xảy ra",
+      }, HttpStatus.BAD_REQUEST, {
+        cause: error
+      })
+    }
+
   }
 
   async removeJob(id: number) {
@@ -83,9 +106,11 @@ export class HireJobService {
   }
 
   async getHiredJob() {
-    return await this.prisma.thueCongViec.findMany({ include: {
-      CongViec: true
-    }});
+    return await this.prisma.thueCongViec.findMany({
+      include: {
+        CongViec: true
+      }
+    });
   }
 
   async statusJob(MaThueCongViec: number) {
@@ -104,7 +129,6 @@ export class HireJobService {
         }
       })
     }
-
     return "Đã cập nhật";
   }
 }
