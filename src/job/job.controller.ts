@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseInterceptors, UploadedFile, UseGuards, Headers, HttpException, HttpStatus } from '@nestjs/common';
 import { JobService } from './job.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { AuthGuard } from '@nestjs/passport';
+
 
 class FileUploadDto {
   @ApiProperty({ type: "string", format: 'binary' })
@@ -44,55 +45,55 @@ class Job {
 }
 
 @ApiBearerAuth()
-@ApiHeader({ name: "Token", description: "JWT token" })
+// @ApiHeader({ name: "Token", description: "JWT token" })
 @UseGuards(AuthGuard("jwt"))
 
 @ApiTags("CongViec")
 @Controller('api/cong-viec')
 export class JobController {
-  constructor(private readonly jobService: JobService) { }
+  constructor(private readonly jobService: JobService) {}
 
   // Lấy về danh sách Công Việc
   @Get()
-  getJob() {
-    return this.jobService.getJob();
+  getJob(@Headers("token") token: string) {
+    return this.jobService.getJob(token);
   }
 
   // Lấy menu loai công viêc 
   @Get("lay-menu-loai-cong-viec")
-  getMenuJobType() {
-    return this.jobService.getMenuJobType();
+  getMenuJobType(@Headers("token") token: string) {
+    return this.jobService.getMenuJobType(token);
   }
 
   // Tạo Công Việc
   @Post()
-  createJob(@Body() payload: Job) {
-    return this.jobService.createJob(payload);
+  createJob(@Headers("token") token: string ,@Body() payload: Job) {
+    return this.jobService.createJob(token ,payload);
   }
 
   // Phân trang Công Việc
   @Get("phan-trang-tim-kiem")
-  jobPage(@Query('pageIndex') pageIndex: number, @Query("pageSize") pageSize: number, @Query("keyword") keyword: string) {
+  jobPage(@Headers("token") token: string, @Query('pageIndex') pageIndex: number, @Query("pageSize") pageSize: number, @Query("keyword") keyword: string) {
     const paginationOptions = { pageIndex, pageSize }
-    return this.jobService.jobPage(paginationOptions, keyword);
+    return this.jobService.jobPage(token ,paginationOptions, keyword);
   }
 
   // lấy thông tin công việc theo id công việc
   @Get(":id")
-  getJobInfor(@Param('id') id: number) {
-    return this.jobService.getJobInfor(+id)
+  getJobInfor(@Headers("token") token: string ,@Param('id') id: number) {
+    return this.jobService.getJobInfor(token ,+id)
   }
 
   // Chỉnh sủa lại thông tin công viêc
   @Put(':id')
-  updateJob(@Param('id') id: number, @Body() payload: Job) {
-    return this.jobService.updateJob(+id, payload);
+  updateJob(@Headers("token") token: string ,@Param('id') id: number, @Body() payload: Job) {
+    return this.jobService.updateJob(token ,+id, payload);
   }
 
   // Xóa công việc đã tạo
   @Delete(':id')
-  removeJob(@Param('id') id: number,) {
-    return this.jobService.removeJob(+id);
+  removeJob(@Headers("token") token: string ,@Param('id') id: number,) {
+    return this.jobService.removeJob(token ,+id);
   }
 
   // Đăng hình ảnh công việc
@@ -109,32 +110,32 @@ export class JobController {
       })
     }))
   @Post("upload-hinh-cong-viec/:MaCongViec")
-  uploadImageJob(@UploadedFile() file: Express.Multer.File, @Param("MaCongViec") MaCongViec: number) {
-    return this.jobService.uploadImageJob(file, +MaCongViec)
+  uploadImageJob(@Headers("token") token: string ,@UploadedFile() file: Express.Multer.File, @Param("MaCongViec") MaCongViec: number) {
+    return this.jobService.uploadImageJob(token ,file, +MaCongViec)
   }
 
   // Lấy Chi tiết loại công việc theo Mã loai công viêc
   @Get('lay-chi-tiet-loai-cong-viec/:MaLoaiCongViec')
-  getDetailJobType(@Param("MaLoaiCongViec") MaLoaiCongViec: number) {
-    return this.jobService.getDetailJobType(+MaLoaiCongViec)
+  getDetailJobType(@Headers("token") token: string, @Param("MaLoaiCongViec") MaLoaiCongViec: number) {
+    return this.jobService.getDetailJobType(token ,+MaLoaiCongViec)
   }
 
   // Lấy Công việc theo chi tiết loại
   @Get('lay-cong-viec-theo-chi-tiet-loai/:MaChiTietLoai')
-  getJobByJobTypeId(@Param("MaChiTietLoai") MaChiTietLoai: number) {
-    return this.jobService.getJobByJobTypeId(+MaChiTietLoai)
+  getJobByJobTypeId(@Headers("token") token: string ,@Param("MaChiTietLoai") MaChiTietLoai: number) {
+    return this.jobService.getJobByJobTypeId(token ,+MaChiTietLoai)
   }
 
   // Lấy công việc chi tiết theo Mã Công Việc
   @Get('lay-cong-viec-chi-tiet/:MaCongViec')
-  gẹtJobDetailById(@Param("MaCongViec") MaCongViec: number) {
-    return this.jobService.gẹtJobDetailById(+MaCongViec)
+  gẹtJobDetailById(@Headers("token") token: string, @Param("MaCongViec") MaCongViec: number) {
+    return this.jobService.gẹtJobDetailById(token ,+MaCongViec)
   }
 
   // Lấy danh sách công việc theo tên (Tên Công Việc)
   @Get('lay-danh-sach-cong-viec-theo-ten/:TenCongViec')
-  getListJobByName(@Param("TenCongViec") TenCongViec: string) {
-    return this.jobService.getListJobByName(TenCongViec)
+  getListJobByName(@Headers("token") token: string, @Param("TenCongViec") TenCongViec: string) {
+    return this.jobService.getListJobByName(token, TenCongViec)
   }
 
 }

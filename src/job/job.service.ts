@@ -1,17 +1,38 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { jwtConstants } from 'src/auth/auth.constants';
 import { PrismaClient } from '@prisma/client';
+
 
 @Injectable()
 export class JobService {
 
+  constructor(private jwtService: JwtService) { }
   prisma = new PrismaClient();
 
-  async getJob() {
-    return await this.prisma.congViec.findMany();
+  async getJob(token) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      return await this.prisma.congViec.findMany();
+
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: "Lỗi xác thực"
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      })
+    }
+
   }
 
-  async createJob(payload) {
+  async createJob(token, payload) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
       await this.prisma.congViec.create({ data: payload });
       return "Đã tạo công việc";
     } catch (error) {
@@ -24,25 +45,39 @@ export class JobService {
     }
   }
 
-  async jobPage(paginationOptions, keyword) {
+  async jobPage(token, paginationOptions, keyword) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let { pageIndex, pageSize } = paginationOptions;
+      const skip = (pageIndex - 1) * pageSize;
 
-    let { pageIndex, pageSize } = paginationOptions;
-    const skip = (pageIndex - 1) * pageSize;
-
-    let job = await this.prisma.congViec.findMany({
-      where: {
-        ten_cong_viec: keyword
-      }, take: Number(pageSize), skip: skip
-    });
-    if (job.length == 0) {
-      return `Không có công việc cần tìm`;
-    } else {
-      return job;
+      let job = await this.prisma.congViec.findMany({
+        where: {
+          ten_cong_viec: keyword
+        }, take: Number(pageSize), skip: skip
+      });
+      if (job.length == 0) {
+        return `Không có công việc cần tìm`;
+      } else {
+        return job;
+      }
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: "Lỗi xác thực",
+      }, HttpStatus.BAD_REQUEST, {
+        cause: error
+      })
     }
   }
 
-  async getJobInfor(id: number) {
+  async getJobInfor(token, id: number) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
       return await this.prisma.congViec.findFirst({
         where: {
           congViec_id: id
@@ -51,15 +86,18 @@ export class JobService {
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
-        error: "Có lỗi xảy ra",
+        error: "Lỗi xác thực",
       }, HttpStatus.BAD_REQUEST, {
         cause: error
       })
     }
   }
 
-  async updateJob(id: number, payload) {
+  async updateJob(token, id: number, payload) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
       let checkJob = await this.prisma.congViec.findFirst({ where: { congViec_id: id } });
 
       if (checkJob) {
@@ -76,33 +114,42 @@ export class JobService {
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
-        error: "Có lỗi server"
+        error: "Lỗi xác thực"
       }, HttpStatus.INTERNAL_SERVER_ERROR, {
         cause: error
       })
     }
   }
 
-  async removeJob(id: number) {
+  async removeJob(token, id: number) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let checkJob = await this.prisma.congViec.findFirst({ where: { congViec_id: id } })
 
-    let checkJob = await this.prisma.congViec.findFirst({ where: { congViec_id: id } })
-
-    // Kiểm tra công việc này là của người dùng nào tạo
-    if (checkJob) {
-      await this.prisma.congViec.delete({ where: { congViec_id: id } });
-      return "Đã xóa công việc"
-    } else {
-      return "Xóa Công việc không thành công"
+      // Kiểm tra công việc này là của người dùng nào tạo
+      if (checkJob) {
+        await this.prisma.congViec.delete({ where: { congViec_id: id } });
+        return "Đã xóa công việc"
+      } else {
+        return "Xóa Công việc không thành công"
+      }
+    } catch (error) {
+      return "Lỗi xác thưc"
     }
+
   }
 
-  async uploadImageJob(file: Express.Multer.File, MaCongViec: number) {
-
-    let { destination, filename } = file;
-    const link = `http://localhost:8080/public/img/${filename}`
-
+  async uploadImageJob(token ,file: Express.Multer.File, MaCongViec: number) {
+  
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
 
+      let { destination, filename } = file;
+      const link = `http://localhost:8080/public/img/${filename}`
       let getImageById = await this.prisma.congViec.findFirst({
         where: {
           congViec_id: MaCongViec
@@ -127,51 +174,93 @@ export class JobService {
     }
   }
 
-  async getMenuJobType() {
-    return await this.prisma.loaiCongViec.findMany();
-    // return menuJobType;
-  }
-
-  async getDetailJobType(MaLoaiCongViec: number) {
-    let data = await this.prisma.chiTietLoaiCongViec.findMany({
-      where: {
-        loaiCongViec_id: MaLoaiCongViec
-      }
-    });
-    return data;
-  }
-
-  async getJobByJobTypeId(MaChiTietLoai: number) {
-    let payload = await this.prisma.congViec.findMany({
-      include: {
-        ChiTietLoaiCongViec: true
-      }, where: {
-        chiTiet_id: MaChiTietLoai
-      }
-    });
-
-    return payload;
-  }
-
-  async gẹtJobDetailById(MaCongViec: number) {
-    let payload = await this.prisma.congViec.findFirst({
-      where: {
-        congViec_id: MaCongViec
-      }
-    })
-    return payload;
-  }
-
-  async getListJobByName(TenCongViec) {
-    let jobName = await this.prisma.congViec.findMany({
-      where: {
-        ten_cong_viec: TenCongViec
-      }
-    })
-    if (jobName.length != 0) {
-      return jobName;
-    } else {
-      return "Không có công việc"
+  async getMenuJobType(token) {
+    try {
+      await this.jwtService.verifyAsync(token)
+      return await this.prisma.loaiCongViec.findMany();
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: "Có lỗi server"
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      })
     }
+
+  }
+
+  async getDetailJobType(token ,MaLoaiCongViec: number) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let data = await this.prisma.chiTietLoaiCongViec.findMany({
+        where: {
+          loaiCongViec_id: MaLoaiCongViec
+        }
+      });
+      return data;
+    } catch (error) {
+      return "Lỗi xác thực"
+    }
+
+  }
+
+  async getJobByJobTypeId(token ,MaChiTietLoai: number) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let payload = await this.prisma.congViec.findMany({
+        include: {
+          ChiTietLoaiCongViec: true
+        }, where: {
+          chiTiet_id: MaChiTietLoai
+        }
+      });
+  
+      return payload;
+    } catch (error) {
+      return "Lỗi xác thực"
+    }
+
+  }
+
+  async gẹtJobDetailById(token ,MaCongViec: number) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let payload = await this.prisma.congViec.findFirst({
+        where: {
+          congViec_id: MaCongViec
+        }
+      })
+      return payload;
+    } catch (error) {
+      return "Lỗi xác thực"
+    }
+
+  }
+
+  async getListJobByName(token, TenCongViec) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let jobName = await this.prisma.congViec.findMany({
+        where: {
+          ten_cong_viec: TenCongViec
+        }
+      })
+      if (jobName.length != 0) {
+        return jobName;
+      } else {
+        return "Không có công việc"
+      }
+    } catch (error) {
+      return "Lỗi xác thực"
+    }
+
   }
 }
