@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { jwtConstants } from 'src/auth/auth.constants';
 
 
 @Injectable()
@@ -9,21 +9,22 @@ export class CommentService {
 
   constructor(private jwtService: JwtService) { }
 
-
-
   prisma = new PrismaClient();
 
-  async postComment(commentData) {
+  async postComment(token, commentData) {
 
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
       await this.prisma.binhLuan.create({ data: commentData });
       return "Đã đăng bình luận";
 
     } catch (error) {
       throw new HttpException({
-        status: HttpStatus.BAD_REQUEST,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
         error: "Đăng bình luận không thành công",
-      }, HttpStatus.BAD_REQUEST, {
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
         cause: error
       })
     }
@@ -32,7 +33,7 @@ export class CommentService {
   async getComment(token) {
     try {
       await this.jwtService.verifyAsync(token, {
-        secret: "CHUNG"
+        secret: jwtConstants.secret
       });
       let comment = await this.prisma.binhLuan.findMany({
         include: {
@@ -54,8 +55,11 @@ export class CommentService {
     }
   }
 
-  async editComment(id: number, commentUpdated) {
+  async editComment(token, id: number, commentUpdated) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
       let checkCmt = await this.prisma.binhLuan.findFirst({ where: { binh_luan_id: id } });
 
       if (checkCmt) {
@@ -77,19 +81,45 @@ export class CommentService {
     }
   }
 
-  async removeCmt(id: number) {
-    let cmt = await this.prisma.binhLuan.findFirst({ where: { binh_luan_id: id } });
-    if (cmt) {
-      await this.prisma.binhLuan.delete({ where: { binh_luan_id: id } });
+  async removeCmt(token, id: number) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let cmt = await this.prisma.binhLuan.findFirst({ where: { binh_luan_id: id } });
+      if (cmt) {
+        await this.prisma.binhLuan.delete({ where: { binh_luan_id: id } });
+      }
+      return "Đã xóa bình luận";
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: "Lỗi xác thực"
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      })
     }
-    return "Đã xóa bình luận";
+
   }
 
-  async getCommentById(MaCongViec: number) {
-    let cmtById = await this.prisma.binhLuan.findMany({ where: { congViec_id: MaCongViec } })
-    if (cmtById.length == 0) {
-      return "Chưa có bình luận cho công việc này!";
+  async getCommentById(token, MaCongViec: number) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let cmtById = await this.prisma.binhLuan.findMany({ where: { congViec_id: MaCongViec } })
+      if (cmtById.length == 0) {
+        return "Chưa có bình luận cho công việc này!";
+      }
+      return cmtById;
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: "Lỗi xác thực"
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: error
+      })
     }
-    return cmtById;
+
   }
 }

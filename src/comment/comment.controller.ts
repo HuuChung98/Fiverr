@@ -36,40 +36,40 @@ class Comment {
 
 @ApiTags("BinhLuan")
 @ApiBearerAuth() // Add this decorator
+@UseGuards(AuthGuard("jwt"))
 @Controller('api/binh-luan')
 export class CommentController {
   constructor(private readonly commentService: CommentService, private jwtService: JwtService) { }
 
-  // Đăng bình luận
-  @Post()
-  postComment(@Body() commentData: Comment) {
-    return this.commentService.postComment(commentData);
-  }
-
   // Lấy bình luận của người dùng
-
-  @UseGuards(AuthGuard("jwt"))
   @Get()
   getComment(@Headers("token") token: string) {
 
     return this.commentService.getComment(token);
   }
 
+  // Đăng bình luận
+  @ApiHeader({ name: "token", description: "nhập token tại đây" })
+  @Post()
+  postComment(@Headers("token") token: string, @Body() commentData: Comment) {
+    return this.commentService.postComment(token, commentData);
+  }
+
   // Chỉnh sửa (cập nhật) thông tin bình luận
   @Put(':id')
-  editComment(@Param('id') id: string, @Body() commentUpdated: Comment) {
-    return this.commentService.editComment(+id, commentUpdated);
+  editComment(@Headers("token") token: string, @Param('id') id: string, @Body() commentUpdated: Comment) {
+    return this.commentService.editComment(token, +id, commentUpdated);
   }
 
   // Xóa bình luận đã đăng
   @Delete(':id')
-  removeCmt(@Param('id') id: string) {
-    return this.commentService.removeCmt(+id);
+  removeCmt(@Headers("token") token: string, @Param('id') id: string) {
+    return this.commentService.removeCmt(token, +id);
   }
 
   // Lấy bình luận theo mã công việc
   @Get('lay-binh-luan-theo-cong-viec/:MaCongViec')
-  getCommentById(@Param('MaCongViec') MaCongViec: string) {
-    return this.commentService.getCommentById(+MaCongViec);
+  getCommentById(@Headers("token") token: string ,@Param('MaCongViec') MaCongViec: string) {
+    return this.commentService.getCommentById(token ,+MaCongViec);
   }
 }
