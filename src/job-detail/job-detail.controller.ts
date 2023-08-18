@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, UseInterceptors, UploadedFile, UseGuards, Headers } from '@nestjs/common';
 import { JobDetailService } from './job-detail.service';
 import { CreateJobDetailDto } from './dto/create-job-detail.dto';
 import { UpdateJobDetailDto } from './dto/update-job-detail.dto';
@@ -20,55 +20,53 @@ class JobTypeDetail {
   ten_chi_tiet: string
 }
 @ApiBearerAuth()
-@ApiHeader({ name: "Token", description: "JWT token"})
 @UseGuards(AuthGuard("jwt"))
-
 @ApiTags("ChiTietLoaiCongViec")
 @Controller('api/chi-tiet-loai-cong-viec')
 export class JobDetailController {
   constructor(private readonly jobDetailService: JobDetailService) { }
 
-  // Tạo Loại Công Viêc
-  @Post()
-  createJobType(@Body() payload: JobTypeDetail) {
-    return this.jobDetailService.createJobType(payload);
-  }
-
   // Lấy chi tiết loại công việc
   @Get()
-  getDetailJobType() {
-    return this.jobDetailService.getDetailJobType();
+  getDetailJobType(@Headers("token") token: string) {
+    return this.jobDetailService.getDetailJobType(token);
+  }
+
+  // Tạo Loại Công Viêc
+  @Post()
+  createJobType(@Headers("token") token: string ,@Body() payload: JobTypeDetail) {
+    return this.jobDetailService.createJobType(token ,payload);
   }
 
   // Phân trang tìm kiếm Loại Công Việc 
   @Get("phan-trang-tim-kiem")
-  getTypeJobPage(@Query("pageIndex") pageIndex: number, @Query("pageSize") pageSize: number, @Query("keyword") keyword: string) {
+  getTypeJobPage(@Headers("token") token: string ,@Query("pageIndex") pageIndex: number, @Query("pageSize") pageSize: number, @Query("keyword") keyword: string) {
     const paginationOptions = { pageIndex, pageSize }
-    return this.jobDetailService.getTypeJobPage(paginationOptions, keyword);
+    return this.jobDetailService.getTypeJobPage(token ,paginationOptions, keyword);
   }
 
   // Lấy chi tiết Loại Công Việc theo Id
   @Get(':id')
-  getJobInfo(@Param('id') id: string) {
-    return this.jobDetailService.getJobInfo(+id);
+  getJobInfo(@Headers("token") token: string ,@Param('id') id: string) {
+    return this.jobDetailService.getJobInfo(token ,+id);
   }
 
   // Chỉnh sử loại công việc đã tạo theo id chi tiết loại
   @Put(':id')
-  updateJobType(@Param('id') id: number, @Body() payload: JobTypeDetail) {
-    return this.jobDetailService.updateJobType(+id, payload);
+  updateJobType(@Headers("token") token: string ,@Param('id') id: number, @Body() payload: JobTypeDetail) {
+    return this.jobDetailService.updateJobType(token ,+id, payload);
   }
 
   // Xóa Loại Công Việc đã tạo theo Id
   @Delete(':id')
-  removeJobType(@Param('id') id: string) {
-    return this.jobDetailService.removeJobType(+id);
+  removeJobType(@Headers("token") token: string ,@Param('id') id: string) {
+    return this.jobDetailService.removeJobType(token ,+id);
   }
 
   // Thêm nhóm Chi tiết Loại
   @Post("them-nhom-chi-tiet-loai")
-  addJobDetail(@Body() createJobDetailDto: CreateJobDetailDto) {
-    return this.jobDetailService.addJobDetail(createJobDetailDto);
+  addJobDetail(@Headers("token") token: string ,@Body() createJobDetailDto: CreateJobDetailDto) {
+    return this.jobDetailService.addJobDetail(token ,createJobDetailDto);
   }
 
   // Upload Hình nhóm loại công việc
@@ -86,14 +84,14 @@ export class JobDetailController {
       })
     }))
   @Post('upload-hinh-nhom-loai_cong-viec/:MaNhomLoaiCongViec')
-  uploadImageGroupTypeJob(@UploadedFile() file: Express.Multer.File, @Param('MaNhomLoaiCongViec') MaNhomLoaiCongViec: number) {
+  uploadImageGroupTypeJob(@Headers("token") token: string ,@UploadedFile() file: Express.Multer.File, @Param('MaNhomLoaiCongViec') MaNhomLoaiCongViec: number) {
 
-    return this.jobDetailService.uploadImageGroupTypeJob(file, +MaNhomLoaiCongViec);
+    return this.jobDetailService.uploadImageGroupTypeJob(token ,file, +MaNhomLoaiCongViec);
   }
 
   // sua nhóm chi tiết loại
   @Put("sua-nhom-chi-tiet-loai/:id")
-  updateGroupJobDetail(@Param("id") id: string, @Body() createJobDetailDto: CreateJobDetailDto) {
-    return this.jobDetailService.updateGroupJobDetail(+id, createJobDetailDto);
+  updateGroupJobDetail(@Headers("token") token: string ,@Param("id") id: string, @Body() createJobDetailDto: CreateJobDetailDto) {
+    return this.jobDetailService.updateGroupJobDetail(token ,+id, createJobDetailDto);
   }
 }

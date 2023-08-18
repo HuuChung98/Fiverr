@@ -3,11 +3,11 @@ import { CommentService } from './comment.service';
 import { ApiBearerAuth, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
+
 const date: Date = new Date();
 // const localizedString: string = date.toLocaleString(); // Format based on user's locale
 const isoString: string = date.toISOString(); // ISO 8601 format
 // const mysqlFormattedDateTime: string = isoString.replace('T', '').slice(0, 19);
-
 
 class Comment {
   // const ngay_binh_luan  = mysqlFormattedDateTime
@@ -29,10 +29,6 @@ class Comment {
   @ApiProperty({ description: "saoBinhLuan", type: Number })
   sao_binh_luan: number;
 }
-
-// @ApiBearerAuth()
-// @ApiHeader({ name: "token", description: "Nhập token"})
-// @UseGuards(AuthGuard("jwt"))
 
 @ApiTags("BinhLuan")
 @ApiBearerAuth() // Add this decorator
@@ -69,7 +65,7 @@ export class CommentController {
 
   // Lấy bình luận theo mã công việc
   @Get('lay-binh-luan-theo-cong-viec/:MaCongViec')
-  getCommentById(@Headers("token") token: string ,@Param('MaCongViec') MaCongViec: string) {
-    return this.commentService.getCommentById(token ,+MaCongViec);
+  getCommentById(@Headers("token") token: string, @Param('MaCongViec') MaCongViec: string) {
+    return this.commentService.getCommentById(token, +MaCongViec);
   }
 }
