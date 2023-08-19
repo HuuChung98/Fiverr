@@ -1,13 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
+import { jwtConstants } from 'src/auth/auth.constants';
 
 @Injectable()
 export class JobTypeService {
 
+  constructor(private jwtService: JwtService) { }
+
   prisma = new PrismaClient();
 
-  async createJobType(payload) {
+  async createJobType(token, payload) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
       let { ten_loai_cong_viec } = payload;
       let jobType = await this.prisma.loaiCongViec.findFirst({ where: { ten_loai_cong_viec } });
 
@@ -27,36 +34,62 @@ export class JobTypeService {
     }
   }
 
-  async getJobType() {
-    return await this.prisma.loaiCongViec.findMany();
-  }
-
-  async getJobType_Page(paginationOptions, keyword) {
-    const { pageIndex, pageSize } = paginationOptions;
-    const skip = (pageIndex - 1) * pageSize;
-
-    let jobType = await this.prisma.loaiCongViec.findMany({
-      include: {
-        ChiTietLoaiCongViec: true
-      }, where: { ten_loai_cong_viec: keyword, }, take: Number(pageSize), skip: skip
-    });
-
-    return jobType;
-  }
-
-  async jobTypeDetail(id: number) {
-    let jobTypeDetail = await this.prisma.loaiCongViec.findFirst({
-      include: {
-        ChiTietLoaiCongViec: true
-      }, where: {
-        loaiCongViec_id: id
-      }
-    })
-    return jobTypeDetail;
-  }
-
-  async updateTypeJob(id: number, payload) {
+  async getJobType(token) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      });
+      return await this.prisma.loaiCongViec.findMany();
+    } catch (error) {
+      return "Lỗi xác thực";
+    }
+  }
+
+  async getJobType_Page(token, paginationOptions, keyword) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      });
+      const { pageIndex, pageSize } = paginationOptions;
+      const skip = (pageIndex - 1) * pageSize;
+
+      let jobType = await this.prisma.loaiCongViec.findMany({
+        include: {
+          ChiTietLoaiCongViec: true
+        }, where: { ten_loai_cong_viec: keyword, }, take: Number(pageSize), skip: skip
+      });
+
+      return jobType;
+    } catch (error) {
+      return "Lỗi xác thực"
+    }
+
+  }
+
+  async jobTypeDetail(token, id: number) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      });
+      let jobTypeDetail = await this.prisma.loaiCongViec.findFirst({
+        include: {
+          ChiTietLoaiCongViec: true
+        }, where: {
+          loaiCongViec_id: id
+        }
+      })
+      return jobTypeDetail;
+    } catch (error) {
+      return "Lỗi xác thực";
+    }
+
+  }
+
+  async updateTypeJob(token ,id: number, payload) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
       await this.prisma.loaiCongViec.update({
         data: payload, where: {
           loaiCongViec_id: id
@@ -66,7 +99,7 @@ export class JobTypeService {
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
-        error: "Cập nhật loại công việc KHÔNG THÀNH CÔNG"
+        error: "Lỗi xác thực"
       }, HttpStatus.BAD_REQUEST, {
         cause: error
       })
@@ -74,19 +107,27 @@ export class JobTypeService {
 
   }
 
-  async removeJobType(id: number) {
-    let removeJobType = await this.prisma.loaiCongViec.findFirst({
-      where: {
-        loaiCongViec_id: id
-      }
-    });
-    if (removeJobType) {
-      await this.prisma.loaiCongViec.delete({
+  async removeJobType(token, id: number) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      });
+      let removeJobType = await this.prisma.loaiCongViec.findFirst({
         where: {
           loaiCongViec_id: id
         }
       });
-      return `Đã xóa loại Công Việc ${removeJobType.ten_loai_cong_viec}`;
+      if (removeJobType) {
+        await this.prisma.loaiCongViec.delete({
+          where: {
+            loaiCongViec_id: id
+          }
+        });
+        return `Đã xóa loại Công Việc ${removeJobType.ten_loai_cong_viec}`;
+      }
+    } catch (error) {
+      return "Lỗi xác thực";
     }
+
   }
 }
