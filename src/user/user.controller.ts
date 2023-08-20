@@ -47,7 +47,6 @@ class User {
 
 
 @ApiBearerAuth()
-@ApiHeader({ name: "Token", description: "JWT token" })
 @UseGuards(AuthGuard("jwt")) // jwt là key mặc định
 
 @ApiTags("NguoiDung")
@@ -56,64 +55,44 @@ export class UserController {
   constructor(private readonly userService: UserService, private jwtService: JwtService) { }
 
   // Lấy danh sách người dùng
-  // @Get()
-  // getUser(@Headers("authorization") access_token) {
-  //   console.log(access_token);
-  //   // Extract the Bearer token from the 'Authorization' header
-  //   if (!access_token) {
-  //     throw new HttpException('Authorization header not provided', HttpStatus.UNAUTHORIZED);
-  //   }
-
-  //   const [bearer, token] = access_token.split(' ');
-  //   if (bearer !== 'Bearer' || !token) {
-  //     throw new HttpException('Invalid Bearer token', HttpStatus.UNAUTHORIZED);
-  //   }
-  //   return this.userService.getUser();
-  // }
-
-   // Lấy danh sách người dùng
-   @Get()
-   getUser() {
-
-     return this.userService.getUser();
-   }
-
-  // Xóa người dùng
-
-  @Delete(':id')
-  removeUser(@Param('id') id: string) {
-    return this.userService.removeUser(+id);
+  @Get()
+  getUser(@Headers("token") token: string) {
+    return this.userService.getUser(token);
   }
-
   // Phân trang tìm kiếm
   @Get("phan-trang-tim-kiem")
-  userUserPage(@Query('pageIndex') pageIndex: number, @Query("pageSize") pageSize: number, @Query("keyword") keyword: string) {
+  userUserPage(@Headers("token") token: string, @Query('pageIndex') pageIndex: number, @Query("pageSize") pageSize: number, @Query("keyword") keyword: string) {
     const paginationOptions = { pageIndex, pageSize }
-    return this.userService.userUserPage(paginationOptions, keyword);
+    return this.userService.userUserPage(token, paginationOptions, keyword);
   }
-
   // Lấy thông tin người dùng theo userId
   @Get(':id')
-  userInfo(@Param('id') id: string) {
-    return this.userService.userInfo(+id);
+  userInfo(@Headers("token") token: string, @Param('id') id: string) {
+    return this.userService.userInfo(token, +id);
   }
 
   // Tạo người dùng
   @Post()
-  createUser(@Body() values: User) {
-    return this.userService.createUser(values);
+  createUser(@Headers("token") token: string, @Body() values: User) {
+    return this.userService.createUser(token, values);
+  }
+
+  // Xóa người dùng
+  @Delete()
+  removeUser(@Headers("token") token: string, @Param('id') id: string) {
+    return this.userService.removeUser(token, +id);
   }
 
   // Chỉnh sửa thông tin người dùng
   @Put(':id')
-  updateUser(@Param('id') id: string, @Body() userUpdate: User) {
-    return this.userService.updateUser(+id, userUpdate);
+  updateUser(@Headers("token") token: string, @Param('id') id: string, @Body() userUpdate: User) {
+    return this.userService.updateUser(token, +id, userUpdate);
   }
 
   // Tìm kiếm người dùng theo tên người dùng
   @Get("search/:TenNguoiDung")
-  searchUserName(@Param('TenNguoiDung') TenNguoiDung: string) {
-    return this.userService.searchUserName(TenNguoiDung);
+  searchUserName(@Headers("token") token: string, @Param('TenNguoiDung') TenNguoiDung: string) {
+    return this.userService.searchUserName(token, TenNguoiDung);
   }
 
   // Upload avatar (cập nhật ảnh đại diện)
@@ -127,13 +106,11 @@ export class UserController {
       storage: diskStorage({
         destination: process.cwd() + "/public/img",
         filename: (rep, file, callback) => callback(null, new Date().getTime() + file.originalname)
-        
+
       })
     }))
   @Post('upload-avatar/:id')
-  uploadAvatar(@UploadedFile() file: Express.Multer.File, @Param('id') id: string) {
-    
-    return this.userService.uploadAvatar(file, +id);
+  uploadAvatar(@Headers("token") token: string, @UploadedFile() file: Express.Multer.File, @Param('id') id: string) {
+    return this.userService.uploadAvatar(token, file, +id);
   }
-
 }

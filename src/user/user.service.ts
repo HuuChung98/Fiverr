@@ -1,30 +1,33 @@
 import { Body, HttpException, Injectable } from '@nestjs/common';
-// import { CreateUserDto } from './dto/create-user.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
-
+import { JwtService } from '@nestjs/jwt';
+import { jwtConstants } from 'src/auth/auth.constants';
 import { PrismaClient, NguoiDung } from '@prisma/client';
 
 
 @Injectable()
 export class UserService {
 
+  constructor(private jwtService: JwtService) { }
+
   prisma = new PrismaClient();
 
-  async createUser(values) {
-    console.log(values);
-    let {
-      nguoi_dung_id,
-      ten_nguoi_dung,
-      email,
-      pass_word,
-      phone,
-      birth_day,
-      gender,
-      role,
-      skill,
-      certification
-    } = values;
+  async createUser(token, values) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let {
+        nguoi_dung_id,
+        ten_nguoi_dung,
+        email,
+        pass_word,
+        phone,
+        birth_day,
+        gender,
+        role,
+        skill,
+        certification
+      } = values;
       let checkUser = await this.prisma.nguoiDung.findFirst({ where: { email } });
 
       if (!checkUser) {
@@ -57,15 +60,25 @@ export class UserService {
     }
   }
 
-  async getUser() {
-    let data = await this.prisma.nguoiDung.findMany();
-    return data
+  async getUser(token) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      });
+      let data = await this.prisma.nguoiDung.findMany();
+      return data;
+    } catch (error) {
+      return "Lỗi xác thực";
+    }
 
   }
 
-  async removeUser(id: number) {
-    let user = await this.prisma.nguoiDung.findFirst({ where: { nguoi_dung_id: id } })
+  async removeUser(token, id: number) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let user = await this.prisma.nguoiDung.findFirst({ where: { nguoi_dung_id: id } })
       if (user) {
         await this.prisma.nguoiDung.delete({ where: { nguoi_dung_id: id } })
         return "Xóa người dùng thành công";
@@ -77,38 +90,51 @@ export class UserService {
     }
   }
 
-  async userInfo(id: number) {
+  async userInfo(token, id: number) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
       let userInfo = await this.prisma.nguoiDung.findFirst({ where: { nguoi_dung_id: id } });
       return userInfo;
     } catch (error) {
-      return "Lỗi BE"
+      return "Lỗi xác thực"
     }
   }
 
-  async userUserPage(paginationOptions, keyword) {
-    const { pageIndex, pageSize } = paginationOptions;
-    const skip = (pageIndex - 1) * pageSize;
+  async userUserPage(token, paginationOptions, keyword) {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      });
+      const { pageIndex, pageSize } = paginationOptions;
+      const skip = (pageIndex - 1) * pageSize;
 
-    let user = await this.prisma.nguoiDung.findMany({ where: { role: keyword }, take: Number(pageSize), skip: skip });
-    return user;
+      let user = await this.prisma.nguoiDung.findMany({ where: { role: keyword }, take: Number(pageSize), skip: skip });
+      return user;
+    } catch (error) {
+      return "Lỗi xác thực";
+    }
+
   }
 
-  async updateUser(id: number, userUpdate) {
-    console.log(userUpdate);
-    let {
-      nguoi_dung_id,
-      ten_nguoi_dung,
-      email,
-      pass_word,
-      phone,
-      birth_day,
-      gender,
-      role,
-      skill,
-      certification
-    } = userUpdate;
+  async updateUser(token, id: number, userUpdate) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let {
+        nguoi_dung_id,
+        ten_nguoi_dung,
+        email,
+        pass_word,
+        phone,
+        birth_day,
+        gender,
+        role,
+        skill,
+        certification
+      } = userUpdate;
       let checkUser = await this.prisma.nguoiDung.findFirst({ where: { email } });
 
       if (!checkUser) {
@@ -140,23 +166,30 @@ export class UserService {
       // return "Lỗi BE"
     }
   }
-  async searchUserName(TenNguoiDung: string) {
+  async searchUserName(token, TenNguoiDung: string) {
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
       const data = await this.prisma.nguoiDung.findFirst({ where: { ten_nguoi_dung: TenNguoiDung } });
       if (data) {
         return data;
       } else {
-        throw new HttpException({ content: `Không người dùng tên ${TenNguoiDung}`, code: 404 }, 404);
+        throw new HttpException({ content: `Không có người dùng tên ${TenNguoiDung}`, code: 404 }, 404);
       }
     } catch (error) {
       throw new HttpException(error.response.content, error.status);
     }
   }
 
-  async uploadAvatar(file: Express.Multer.File, id: number) {
-    let { destination, filename } = file;
-    const link = `http://localhost:8080/public/img/${filename}`
+  async uploadAvatar(token, file: Express.Multer.File, id: number) {
+
     try {
+      await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      })
+      let { destination, filename } = file;
+      const link = `http://localhost:8080/public/img/${filename}`
 
       let getUserById = await this.prisma.nguoiDung.findFirst({ where: { nguoi_dung_id: id } });
 
@@ -175,6 +208,6 @@ export class UserService {
       throw new HttpException(error.response.content, error.status);
     }
   }
-   
+
 }
 // DATABASE_URL="mysql://root:1234@localhost:3306/db_fiverr?schema=public"
