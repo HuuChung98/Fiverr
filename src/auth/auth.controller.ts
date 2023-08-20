@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { ApiBearerAuth, ApiHeader, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger'; 
+import { AuthGuard } from '@nestjs/passport';
 
 
 class userType {
@@ -13,7 +14,8 @@ class userType {
 }
 
 @ApiBearerAuth()
-@ApiHeader({ name: "Token", description: "JWT Token"})
+// @ApiHeader({ name: "Token", description: "JWT Token"})
+@UseGuards(AuthGuard("jwt"))
 
 @ApiTags("Auth")
 @Controller('api/auth')
@@ -21,13 +23,12 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("/login")
-  login(@Body() userLogin:  userType) {
-    return this.authService.login(userLogin);
+  login(@Headers("token") token: string, @Body() userLogin:  userType) {
+    return this.authService.login(token, userLogin);
   }
 
-
   @Post("/sign-up")
-  register(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.register(createAuthDto);
+  register(@Headers("token") token: string, @Body() createAuthDto: CreateAuthDto) {
+    return this.authService.register(token, createAuthDto);
   }
 }

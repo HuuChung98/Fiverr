@@ -11,7 +11,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             jwtFromRequest: // nhận req từ client
                 ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            // secretOrKey: config.get("KEY"), // KEY: FLASH KHÓA BÍ MẬT 
+            // secretOrKey: config.get("KEY"), // KEY: CHUNG KHÓA BÍ MẬT 
             secretOrKey: "CHUNG"
         });
     }
