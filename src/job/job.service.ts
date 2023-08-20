@@ -141,8 +141,8 @@ export class JobService {
 
   }
 
-  async uploadImageJob(token ,file: Express.Multer.File, MaCongViec: number) {
-  
+  async uploadImageJob(token, file: Express.Multer.File, MaCongViec: number) {
+
     try {
       await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret
@@ -181,7 +181,7 @@ export class JobService {
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
-        error: "Có lỗi server"
+        error: "Lỗi xác thực"
       }, HttpStatus.INTERNAL_SERVER_ERROR, {
         cause: error
       })
@@ -189,7 +189,7 @@ export class JobService {
 
   }
 
-  async getDetailJobType(token ,MaLoaiCongViec: number) {
+  async getDetailJobType(token, MaLoaiCongViec: number) {
     try {
       await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret
@@ -199,14 +199,19 @@ export class JobService {
           loaiCongViec_id: MaLoaiCongViec
         }
       });
-      return data;
+      if(data.length != 0) {
+        return data;
+      } else {
+        return "Không có loại công việc cần hiển thị"
+      }
+
     } catch (error) {
       return "Lỗi xác thực"
     }
 
   }
 
-  async getJobByJobTypeId(token ,MaChiTietLoai: number) {
+  async getJobByJobTypeId(token, MaChiTietLoai: number) {
     try {
       await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret
@@ -218,7 +223,6 @@ export class JobService {
           chiTiet_id: MaChiTietLoai
         }
       });
-  
       return payload;
     } catch (error) {
       return "Lỗi xác thực"
@@ -226,7 +230,7 @@ export class JobService {
 
   }
 
-  async gẹtJobDetailById(token ,MaCongViec: number) {
+  async gẹtJobDetailById(token, MaCongViec: number) {
     try {
       await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret
@@ -261,6 +265,5 @@ export class JobService {
     } catch (error) {
       return "Lỗi xác thực"
     }
-
   }
 }
