@@ -69,7 +69,7 @@ export declare class UserController {
         skill: any;
         certification: any;
     }>;
-    removeUser(token: string, id: string): Promise<string>;
+    removeUser(token: string, id: string): Promise<"Lỗi xác thực" | "Xóa người dùng thành công" | "Xóa người dùng thất bại, kiểm tra lại ID của người dùng">;
     updateUser(token: string, id: string, userUpdate: User): Promise<{
         nguoi_dung_id: any;
         ten_nguoi_dung: any;

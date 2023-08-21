@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
@@ -174,7 +175,7 @@ __decorate([
     __param(1, (0, common_1.UploadedFile)()),
     __param(2, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, String]),
+    __metadata("design:paramtypes", [String, typeof (_c = typeof Express !== "undefined" && (_b = Express.Multer) !== void 0 && _b.File) === "function" ? _c : Object, String]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "uploadAvatar", null);
 exports.UserController = UserController = __decorate([
@@ -182,6 +183,6 @@ exports.UserController = UserController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     (0, swagger_1.ApiTags)("NguoiDung"),
     (0, common_1.Controller)('api/users'),
-    __metadata("design:paramtypes", [user_service_1.UserService, jwt_1.JwtService])
+    __metadata("design:paramtypes", [user_service_1.UserService, typeof (_a = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _a : Object])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

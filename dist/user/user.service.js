@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
@@ -74,11 +75,11 @@ let UserService = exports.UserService = class UserService {
                 return "Xóa người dùng thành công";
             }
             else {
-                throw new common_1.HttpException({ content: "Xóa người dùng thất bại, kiểm tra lại ID của người dùng", code: 404 }, 404);
+                return "Xóa người dùng thất bại, kiểm tra lại ID của người dùng";
             }
         }
         catch (error) {
-            throw new common_1.HttpException(error.response.content, error.status);
+            return "Lỗi xác thực";
         }
     }
     async userInfo(token, id) {
@@ -135,7 +136,6 @@ let UserService = exports.UserService = class UserService {
             }
         }
         catch (error) {
-            console.log(error);
             throw new common_1.HttpException(error.response.content, error.status);
         }
     }
@@ -182,6 +182,6 @@ let UserService = exports.UserService = class UserService {
 };
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [jwt_1.JwtService])
+    __metadata("design:paramtypes", [typeof (_a = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _a : Object])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

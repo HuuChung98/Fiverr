@@ -15,9 +15,6 @@ export class AuthService {
 
   async login( userLogin) {
     try {
-      // await this.jwtService.verifyAsync(token, {
-      //   secret: jwtConstants.secret
-      // });
       let { email, pass_word } = userLogin;
       const user = await this.prisma.nguoiDung.findFirst({where: {email}});
       if (user?.pass_word !== pass_word) {
@@ -29,7 +26,7 @@ export class AuthService {
         access_token : await this.jwtService.signAsync(payload)
       }
     } catch (error) {
-      return "Lỗi xác thực";
+      return "Đăng nhập không thành công";
     }
   }
   async register(token, createAuthDto: CreateAuthDto) {
