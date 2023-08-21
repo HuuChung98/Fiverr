@@ -83,10 +83,10 @@ export class UserService {
         await this.prisma.nguoiDung.delete({ where: { nguoi_dung_id: id } })
         return "Xóa người dùng thành công";
       } else {
-        throw new HttpException({ content: "Xóa người dùng thất bại, kiểm tra lại ID của người dùng", code: 404 }, 404);
+        return "Xóa người dùng thất bại, kiểm tra lại ID của người dùng";
       }
     } catch (error) {
-      throw new HttpException(error.response.content, error.status);
+      return "Lỗi xác thực"
     }
   }
 
@@ -161,7 +161,6 @@ export class UserService {
       }
 
     } catch (error) {
-      console.log(error);
       throw new HttpException(error.response.content, error.status);
       // return "Lỗi BE"
     }
