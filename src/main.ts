@@ -9,10 +9,9 @@ async function bootstrap() {
   const config = new DocumentBuilder().setTitle("Fiverr").addBearerAuth().build();
   // const config = new DocumentBuilder().setTitle("Fiverr").build();
 
-
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("/swagger", app, document)
 
-  await app.listen(8080);
+  await app.listen(8081);
 }
 bootstrap();
