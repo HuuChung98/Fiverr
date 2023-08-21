@@ -5,5 +5,5 @@ RUN yarn install --legacy-peer-deps
 COPY prisma ./prisma/
 RUN yarn prisma generate
 COPY . .
-EXPOSE 8080
+EXPOSE 8081
 CMD [ "node", "dist/main" ]
