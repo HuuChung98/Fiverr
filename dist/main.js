@@ -9,7 +9,7 @@ async function bootstrap() {
     const config = new swagger_1.DocumentBuilder().setTitle("Fiverr").addBearerAuth().build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup("/swagger", app, document);
-    await app.listen(8080);
+    await app.listen(8081);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
