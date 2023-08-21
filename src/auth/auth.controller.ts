@@ -15,7 +15,7 @@ class userType {
 
 @ApiBearerAuth()
 // @ApiHeader({ name: "Token", description: "JWT Token"})
-@UseGuards(AuthGuard("jwt"))
+// @UseGuards(AuthGuard("jwt"))
 
 @ApiTags("Auth")
 @Controller('api/auth')
@@ -23,8 +23,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("/login")
-  login(@Headers("token") token: string, @Body() userLogin:  userType) {
-    return this.authService.login(token, userLogin);
+  login(@Body() userLogin:  userType) {
+    return this.authService.login(userLogin);
   }
 
   @Post("/sign-up")

@@ -13,11 +13,11 @@ export class AuthService {
 
   prisma = new PrismaClient();
 
-  async login( token, userLogin) {
+  async login( userLogin) {
     try {
-      await this.jwtService.verifyAsync(token, {
-        secret: jwtConstants.secret
-      });
+      // await this.jwtService.verifyAsync(token, {
+      //   secret: jwtConstants.secret
+      // });
       let { email, pass_word } = userLogin;
       const user = await this.prisma.nguoiDung.findFirst({where: {email}});
       if (user?.pass_word !== pass_word) {
