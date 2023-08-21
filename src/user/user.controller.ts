@@ -59,6 +59,17 @@ export class UserController {
   getUser(@Headers("token") token: string) {
     return this.userService.getUser(token);
   }
+  // Tạo người dùng
+  @Post()
+  createUser(@Headers("token") token: string, @Body() values: User) {
+    return this.userService.createUser(token, values);
+  }
+
+  // Xóa người dùng
+  @Delete()
+  removeUser(@Headers("token") token: string, @Query('id') id: string) {
+    return this.userService.removeUser(token, +id);
+  }
   // Phân trang tìm kiếm
   @Get("phan-trang-tim-kiem")
   userUserPage(@Headers("token") token: string, @Query('pageIndex') pageIndex: number, @Query("pageSize") pageSize: number, @Query("keyword") keyword: string) {
@@ -71,17 +82,7 @@ export class UserController {
     return this.userService.userInfo(token, +id);
   }
 
-  // Tạo người dùng
-  @Post()
-  createUser(@Headers("token") token: string, @Body() values: User) {
-    return this.userService.createUser(token, values);
-  }
 
-  // Xóa người dùng
-  @Delete()
-  removeUser(@Headers("token") token: string, @Param('id') id: string) {
-    return this.userService.removeUser(token, +id);
-  }
 
   // Chỉnh sửa thông tin người dùng
   @Put(':id')

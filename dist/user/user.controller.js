@@ -76,18 +76,18 @@ let UserController = exports.UserController = class UserController {
     getUser(token) {
         return this.userService.getUser(token);
     }
+    createUser(token, values) {
+        return this.userService.createUser(token, values);
+    }
+    removeUser(token, id) {
+        return this.userService.removeUser(token, +id);
+    }
     userUserPage(token, pageIndex, pageSize, keyword) {
         const paginationOptions = { pageIndex, pageSize };
         return this.userService.userUserPage(token, paginationOptions, keyword);
     }
     userInfo(token, id) {
         return this.userService.userInfo(token, +id);
-    }
-    createUser(token, values) {
-        return this.userService.createUser(token, values);
-    }
-    removeUser(token, id) {
-        return this.userService.removeUser(token, +id);
     }
     updateUser(token, id, userUpdate) {
         return this.userService.updateUser(token, +id, userUpdate);
@@ -107,6 +107,22 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "getUser", null);
 __decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Headers)("token")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, User]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "createUser", null);
+__decorate([
+    (0, common_1.Delete)(),
+    __param(0, (0, common_1.Headers)("token")),
+    __param(1, (0, common_1.Query)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "removeUser", null);
+__decorate([
     (0, common_1.Get)("phan-trang-tim-kiem"),
     __param(0, (0, common_1.Headers)("token")),
     __param(1, (0, common_1.Query)('pageIndex')),
@@ -124,22 +140,6 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "userInfo", null);
-__decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Headers)("token")),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, User]),
-    __metadata("design:returntype", void 0)
-], UserController.prototype, "createUser", null);
-__decorate([
-    (0, common_1.Delete)(),
-    __param(0, (0, common_1.Headers)("token")),
-    __param(1, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", void 0)
-], UserController.prototype, "removeUser", null);
 __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Headers)("token")),

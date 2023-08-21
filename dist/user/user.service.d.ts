@@ -31,7 +31,7 @@ export declare class UserService {
         certification: string;
         hinh_dai_dien: string;
     }[] | "Lỗi xác thực">;
-    removeUser(token: any, id: number): Promise<"Lỗi xác thực" | "Xóa người dùng thành công" | "Xóa người dùng thất bại, kiểm tra lại ID của người dùng">;
+    removeUser(token: any, id: number): Promise<"Xóa người dùng thành công" | "Xóa người dùng thất bại, kiểm tra lại ID của người dùng">;
     userInfo(token: any, id: number): Promise<{
         nguoi_dung_id: number;
         ten_nguoi_dung: string;

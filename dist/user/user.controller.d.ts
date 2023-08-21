@@ -30,6 +30,20 @@ export declare class UserController {
         certification: string;
         hinh_dai_dien: string;
     }[] | "Lỗi xác thực">;
+    createUser(token: string, values: User): Promise<{
+        message: string;
+        nguoi_dung_id: any;
+        ten_nguoi_dung: any;
+        email: any;
+        pass_word: any;
+        phone: any;
+        birth_day: any;
+        gender: any;
+        role: any;
+        skill: any;
+        certification: any;
+    }>;
+    removeUser(token: string, id: string): Promise<"Xóa người dùng thành công" | "Xóa người dùng thất bại, kiểm tra lại ID của người dùng">;
     userUserPage(token: string, pageIndex: number, pageSize: number, keyword: string): Promise<{
         nguoi_dung_id: number;
         ten_nguoi_dung: string;
@@ -56,20 +70,6 @@ export declare class UserController {
         certification: string;
         hinh_dai_dien: string;
     } | "Lỗi xác thực">;
-    createUser(token: string, values: User): Promise<{
-        message: string;
-        nguoi_dung_id: any;
-        ten_nguoi_dung: any;
-        email: any;
-        pass_word: any;
-        phone: any;
-        birth_day: any;
-        gender: any;
-        role: any;
-        skill: any;
-        certification: any;
-    }>;
-    removeUser(token: string, id: string): Promise<"Lỗi xác thực" | "Xóa người dùng thành công" | "Xóa người dùng thất bại, kiểm tra lại ID của người dùng">;
     updateUser(token: string, id: string, userUpdate: User): Promise<{
         nguoi_dung_id: any;
         ten_nguoi_dung: any;
