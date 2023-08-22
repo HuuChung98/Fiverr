@@ -8,5 +8,5 @@ export declare class AuthService {
     login(userLogin: any): Promise<"Đăng nhập không thành công" | {
         access_token: string;
     }>;
-    register(token: any, createAuthDto: CreateAuthDto): Promise<"Lỗi xác thực" | "Đã tạo tài khoản" | "Email đã tồn tại">;
+    register(createAuthDto: CreateAuthDto): Promise<"Đã tạo tài khoản" | "Email đã tồn tại" | "Đăng kí không thành công">;
 }

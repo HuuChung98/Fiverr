@@ -34,8 +34,8 @@ let AuthController = exports.AuthController = class AuthController {
     login(userLogin) {
         return this.authService.login(userLogin);
     }
-    register(token, createAuthDto) {
-        return this.authService.register(token, createAuthDto);
+    register(createAuthDto) {
+        return this.authService.register(createAuthDto);
     }
 };
 __decorate([
@@ -47,10 +47,9 @@ __decorate([
 ], AuthController.prototype, "login", null);
 __decorate([
     (0, common_1.Post)("/sign-up"),
-    __param(0, (0, common_1.Headers)("token")),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_auth_dto_1.CreateAuthDto]),
+    __metadata("design:paramtypes", [create_auth_dto_1.CreateAuthDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "register", null);
 exports.AuthController = AuthController = __decorate([

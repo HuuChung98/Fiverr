@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
-const auth_constants_1 = require("./auth.constants");
 const client_1 = require("@prisma/client");
 let AuthService = exports.AuthService = class AuthService {
     constructor(jwtService) {
@@ -36,11 +35,8 @@ let AuthService = exports.AuthService = class AuthService {
             return "Đăng nhập không thành công";
         }
     }
-    async register(token, createAuthDto) {
+    async register(createAuthDto) {
         try {
-            await this.jwtService.verifyAsync(token, {
-                secret: auth_constants_1.jwtConstants.secret
-            });
             let checkUser = await this.prisma.nguoiDung.findFirst({ where: {
                     email: createAuthDto.email
                 } });
@@ -53,7 +49,7 @@ let AuthService = exports.AuthService = class AuthService {
             }
         }
         catch (error) {
-            return "Lỗi xác thực";
+            return "Đăng kí không thành công";
         }
     }
 };
