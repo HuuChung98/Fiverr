@@ -64,16 +64,21 @@ let UserService = exports.UserService = class UserService {
         }
     }
     async removeUser(token, id) {
-        await this.jwtService.verifyAsync(token, {
-            secret: auth_constants_1.jwtConstants.secret
-        });
-        let userRemove = await this.prisma.nguoiDung.findFirst({ where: { nguoi_dung_id: id } });
-        if (userRemove) {
-            await this.prisma.nguoiDung.delete({ where: { nguoi_dung_id: id } });
-            return "Xóa người dùng thành công";
+        try {
+            await this.jwtService.verifyAsync(token, {
+                secret: auth_constants_1.jwtConstants.secret
+            });
+            let user = await this.prisma.nguoiDung.findFirst({ where: { nguoi_dung_id: id } });
+            if (user) {
+                await this.prisma.nguoiDung.delete({ where: { nguoi_dung_id: id } });
+                return "Xóa người dùng thành công";
+            }
+            else {
+                return "Xóa người dùng thất bại, kiểm tra lại ID của người dùng";
+            }
         }
-        else {
-            return "Xóa người dùng thất bại, kiểm tra lại ID của người dùng";
+        catch (error) {
+            return "Lỗi xác thực";
         }
     }
     async userInfo(token, id) {
@@ -156,7 +161,7 @@ let UserService = exports.UserService = class UserService {
                 secret: auth_constants_1.jwtConstants.secret
             });
             let { destination, filename } = file;
-            const link = `http://localhost:8080/public/img/${filename}`;
+            const link = `https://fiverr.memorytera.com/public/img/${filename}`;
             let getUserById = await this.prisma.nguoiDung.findFirst({ where: { nguoi_dung_id: id } });
             if (getUserById) {
                 getUserById.hinh_dai_dien = link;

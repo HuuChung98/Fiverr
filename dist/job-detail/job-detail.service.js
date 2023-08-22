@@ -145,7 +145,7 @@ let JobDetailService = exports.JobDetailService = class JobDetailService {
     }
     async uploadImageGroupTypeJob(token, file, MaNhomLoaiCongViec) {
         let { destination, filename } = file;
-        const link = `http://localhost:8080/public/img/${filename}`;
+        const link = `https://fiverr.memorytera.com/public/img/${filename}`;
         try {
             await this.jwtService.verifyAsync(token, {
                 secret: auth_constants_1.jwtConstants.secret

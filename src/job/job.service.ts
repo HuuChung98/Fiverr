@@ -149,7 +149,7 @@ export class JobService {
       })
 
       let { destination, filename } = file;
-      const link = `http://localhost:8080/public/img/${filename}`
+      const link = `https://fiverr.memorytera.com/public/img/${filename}`
       let getImageById = await this.prisma.congViec.findFirst({
         where: {
           congViec_id: MaCongViec

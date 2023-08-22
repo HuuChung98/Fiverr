@@ -188,7 +188,7 @@ export class UserService {
         secret: jwtConstants.secret
       })
       let { destination, filename } = file;
-      const link = `http://localhost:8080/public/img/${filename}`
+      const link = `https://fiverr.memorytera.com/public/img/${filename}`
 
       let getUserById = await this.prisma.nguoiDung.findFirst({ where: { nguoi_dung_id: id } });
 

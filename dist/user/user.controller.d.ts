@@ -43,7 +43,7 @@ export declare class UserController {
         skill: any;
         certification: any;
     }>;
-    removeUser(token: string, id: string): Promise<"Xóa người dùng thành công" | "Xóa người dùng thất bại, kiểm tra lại ID của người dùng">;
+    removeUser(token: string, id: string): Promise<"Lỗi xác thực" | "Xóa người dùng thành công" | "Xóa người dùng thất bại, kiểm tra lại ID của người dùng">;
     userUserPage(token: string, pageIndex: number, pageSize: number, keyword: string): Promise<{
         nguoi_dung_id: number;
         ten_nguoi_dung: string;
