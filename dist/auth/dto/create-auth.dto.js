@@ -19,7 +19,7 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateAuthDto.prototype, "nguoi_dung_id", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: "name", type: Number }),
+    (0, swagger_1.ApiProperty)({ description: "name", type: String }),
     __metadata("design:type", String)
 ], CreateAuthDto.prototype, "ten_nguoi_dung", void 0);
 __decorate([
@@ -50,6 +50,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: "role", type: String }),
     __metadata("design:type", String)
 ], CreateAuthDto.prototype, "role", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: "skill", type: String }),
+    __metadata("design:type", String)
+], CreateAuthDto.prototype, "skill", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: "certification", type: String }),
     __metadata("design:type", String)

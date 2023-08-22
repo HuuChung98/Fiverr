@@ -8,5 +8,6 @@ export declare class CreateAuthDto {
     birth_day: string;
     gender: string;
     role: string;
+    skill: string;
     certification: string;
 }

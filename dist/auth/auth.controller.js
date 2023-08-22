@@ -31,13 +31,20 @@ let AuthController = exports.AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
+    signUp(createAuthDto) {
+        return this.authService.signUp(createAuthDto);
+    }
     login(userLogin) {
         return this.authService.login(userLogin);
     }
-    register(createAuthDto) {
-        return this.authService.register(createAuthDto);
-    }
 };
+__decorate([
+    (0, common_1.Post)("/sign-up"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_auth_dto_1.CreateAuthDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "signUp", null);
 __decorate([
     (0, common_1.Post)("/login"),
     __param(0, (0, common_1.Body)()),
@@ -45,13 +52,6 @@ __decorate([
     __metadata("design:paramtypes", [userType]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "login", null);
-__decorate([
-    (0, common_1.Post)("/sign-up"),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_auth_dto_1.CreateAuthDto]),
-    __metadata("design:returntype", void 0)
-], AuthController.prototype, "register", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiTags)("Auth"),

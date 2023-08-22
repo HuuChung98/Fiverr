@@ -22,13 +22,14 @@ class userType {
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Post("/sign-up")
+  signUp(@Body() createAuthDto: CreateAuthDto) {
+    return this.authService.signUp(createAuthDto);
+  }
   @Post("/login")
   login(@Body() userLogin:  userType) {
     return this.authService.login(userLogin);
   }
 
-  @Post("/sign-up")
-  register(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.register(createAuthDto);
-  }
+
 }

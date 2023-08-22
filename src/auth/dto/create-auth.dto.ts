@@ -4,7 +4,7 @@ export class CreateAuthDto {
     @ApiProperty({ description: "userId", type: Number})
     nguoi_dung_id: number;
 
-    @ApiProperty({ description: "name", type: Number})
+    @ApiProperty({ description: "name", type: String})
     ten_nguoi_dung: string;
 
     @ApiProperty({ description: "hinhDaiDien", type: String})
@@ -27,6 +27,9 @@ export class CreateAuthDto {
 
     @ApiProperty({ description: "role", type: String})
     role: string
+
+    @ApiProperty({ description: "skill", type: String})
+    skill: string
 
     @ApiProperty( { description: "certification", type: String})
     certification: string

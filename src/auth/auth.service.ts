@@ -13,6 +13,27 @@ export class AuthService {
 
   prisma = new PrismaClient();
 
+  async signUp(createAuthDto: CreateAuthDto) {
+    try {
+      let checkUser = await this.prisma.nguoiDung.findFirst({ where: {
+        email: createAuthDto.email
+      }});
+      
+      if(!checkUser) {
+        await this.prisma.nguoiDung.create({data: createAuthDto});
+        return "Đã tạo tài khoản";
+      } else {
+        return "Email đã tồn tại";
+      }
+    } catch (error) {
+      return "Lổi BE"
+    }
+    
+
+
+
+}
+
   async login( userLogin) {
     try {
       let { email, pass_word } = userLogin;
@@ -29,22 +50,6 @@ export class AuthService {
       return "Đăng nhập không thành công";
     }
   }
-  async register(createAuthDto: CreateAuthDto) {
-    try {
-      let checkUser = await this.prisma.nguoiDung.findFirst({ where: {
-        email: createAuthDto.email
-      }});
-      
-      if(!checkUser) {
-        await this.prisma.nguoiDung.create({data: createAuthDto});
-        return "Đã tạo tài khoản";
-      } else {
-        return "Email đã tồn tại";
-      }
-    } catch (error) {
-      return "Đăng kí không thành công";
-    }
 
-  }
 
 }

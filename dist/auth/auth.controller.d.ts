@@ -7,9 +7,9 @@ declare class userType {
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
+    signUp(createAuthDto: CreateAuthDto): Promise<"Đã tạo tài khoản" | "Email đã tồn tại" | "Lổi BE">;
     login(userLogin: userType): Promise<"Đăng nhập không thành công" | {
         access_token: string;
     }>;
-    register(createAuthDto: CreateAuthDto): Promise<"Đã tạo tài khoản" | "Email đã tồn tại" | "Đăng kí không thành công">;
 }
 export {};
