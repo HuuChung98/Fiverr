@@ -28,7 +28,7 @@ export class AuthController {
   }
 
   @Post("/sign-up")
-  register(@Headers("token") token: string, @Body() createAuthDto: CreateAuthDto) {
-    return this.authService.register(token, createAuthDto);
+  register(@Body() createAuthDto: CreateAuthDto) {
+    return this.authService.register(createAuthDto);
   }
 }

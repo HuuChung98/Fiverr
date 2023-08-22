@@ -29,11 +29,8 @@ export class AuthService {
       return "Đăng nhập không thành công";
     }
   }
-  async register(token, createAuthDto: CreateAuthDto) {
+  async register(createAuthDto: CreateAuthDto) {
     try {
-      await this.jwtService.verifyAsync(token, {
-        secret: jwtConstants.secret
-      });
       let checkUser = await this.prisma.nguoiDung.findFirst({ where: {
         email: createAuthDto.email
       }});
@@ -45,7 +42,7 @@ export class AuthService {
         return "Email đã tồn tại";
       }
     } catch (error) {
-      return "Lỗi xác thực";
+      return "Đăng kí không thành công";
     }
 
   }
